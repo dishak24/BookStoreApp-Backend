@@ -16,5 +16,9 @@ namespace RepositoryLayer.Entity
         public string Password { get; set; }
         public string Mobile { get; set; }
         public string Role { get; set; }
+
+        // for refresh token
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
     }
 }
