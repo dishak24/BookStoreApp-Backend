@@ -9,5 +9,7 @@ namespace ManagerLayer.Interfaces
     public interface IJwtTokenManager
     {
         Task<string> GenerateToken(JwtModel jwtModel);
+        Task<string> GenerateRefreshToken();
+        public Task SaveRefreshTokenInDb(int userId, string refreshToken);
     }
 }
