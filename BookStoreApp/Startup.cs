@@ -38,40 +38,40 @@ namespace BookStoreApp
             services.AddDbContext<BookDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
 
             //For swagger
-            services.AddSwaggerGen();
+            //services.AddSwaggerGen();
 
             //for adding Authorization in swagger --- to paste token
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo
-            //    {
-            //        Title = "Book-Store-App API",
-            //        Version = "v1"
-            //    });
-            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-            //    {
-            //        Name = "Authorization",
-            //        Type = SecuritySchemeType.Http,
-            //        Scheme = "Bearer",
-            //        BearerFormat = "JWT",
-            //        In = ParameterLocation.Header,
-            //        Description = "Enter you valid Token",
-            //    });
-            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            //                            {
-            //                                {
-            //                                    new OpenApiSecurityScheme
-            //                                    {
-            //                                        Reference = new OpenApiReference
-            //                                        {
-            //                                            Type = ReferenceType.SecurityScheme,
-            //                                                Id = "Bearer"
-            //                                        }
-            //                                    },
-            //                                    new string[] {}
-            //                                }
-            //                             });
-            //});
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Book-Store-App API",
+                    Version = "v1"
+                });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter you valid Token",
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                                        {
+                                            {
+                                                new OpenApiSecurityScheme
+                                                {
+                                                    Reference = new OpenApiReference
+                                                    {
+                                                        Type = ReferenceType.SecurityScheme,
+                                                            Id = "Bearer"
+                                                    }
+                                                },
+                                                new string[] {}
+                                            }
+                                         });
+            });
 
 
             //for user
