@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RepositoryLayer.Context;
 using RepositoryLayer.Interfaces;
@@ -36,6 +39,13 @@ namespace BookStoreApp
 
             //for configure database connection
             services.AddDbContext<BookDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
+
+            //for user
+            services.AddTransient<IUserRepo, UserRepo>();
+            services.AddTransient<IUserManager, UserManager>();
+
+            //for token
+            services.AddTransient<IJwtTokenManager, JwtTokenManager>();
 
             //For swagger
             //services.AddSwaggerGen();
@@ -74,12 +84,28 @@ namespace BookStoreApp
             });
 
 
-            //for user
-            services.AddTransient<IUserRepo, UserRepo>();
-            services.AddTransient<IUserManager, UserManager>();
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            //for token
-            services.AddTransient<IJwtTokenManager, JwtTokenManager>();
+            }).AddJwtBearer(o =>
+            {
+                var key = Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]);
+                o.SaveToken = true;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
+
+            
 
 
         }
@@ -91,6 +117,11 @@ namespace BookStoreApp
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //authentication must be on top
+            app.UseAuthentication();  // <- MUST be before Authorization
+            app.UseAuthorization();
+
 
             // This middleware serves generated Swagger document as a JSON endpoint
             app.UseSwagger();
@@ -106,7 +137,7 @@ namespace BookStoreApp
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
