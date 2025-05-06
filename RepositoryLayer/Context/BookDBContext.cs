@@ -13,5 +13,8 @@ namespace RepositoryLayer.Context
         //For create User table 
         public DbSet<UserEntity> Users { get; set; }
 
+        //For create Admin table
+        public DbSet<AdminEntity> Admins { get; set; }
+
     }
 }
