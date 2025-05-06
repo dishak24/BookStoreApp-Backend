@@ -15,6 +15,9 @@ namespace RepositoryLayer.Interfaces
         //Register User
         public Task<UserEntity> RegisterAsync(RegisterModel model);
 
+        // user login 
+        public Task<UserEntity> LoginAsync(LoginModel loginModel);
+
 
     }
 }

@@ -63,7 +63,17 @@ namespace RepositoryLayer.Services
             }
         }
 
-
+        // user login 
+        public async Task<UserEntity> LoginAsync(LoginModel loginModel)
+        {
+            var checkUser = await this.context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == EncodePasswordToBase64(loginModel.Password));
+            if (checkUser != null)
+            {
+                return checkUser;
+              
+            }
+            return null;
+        }
 
 
     }

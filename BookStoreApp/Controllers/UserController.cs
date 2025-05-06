@@ -11,15 +11,17 @@ namespace BookStoreApp.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserManager userManager;
+        private readonly IJwtTokenManager tokenManager;
 
-        public UserController(IUserManager userManager)
+        public UserController(IUserManager userManager , IJwtTokenManager tokenManager)
         {
             this.userManager = userManager;
+            this.tokenManager = tokenManager;
         }
 
         //User registration
         [HttpPost]
-        [Route("register")]
+        [Route("userRegister")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         {
             if (model == null)
@@ -58,5 +60,28 @@ namespace BookStoreApp.Controllers
                 });
             }
         }
+
+
+        //user login
+        [HttpPost()]
+        [Route("userLogin")]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            var user = await userManager.LoginAsync(model);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var token = await tokenManager.GenerateToken(new JwtModel
+            {
+                Id = user.UserId,
+                Email = user.Email,
+                Role = "User"
+            });
+
+            return Ok(new { Token = token });
+        }
+
     }
 }

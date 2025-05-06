@@ -30,5 +30,11 @@ namespace ManagerLayer.Services
         {
             return await userRepo.RegisterAsync(model);
         }
+
+        // user login 
+        public async Task<UserEntity> LoginAsync(LoginModel loginModel)
+        {
+            return await userRepo.LoginAsync(loginModel);
+        }
     }
 }
