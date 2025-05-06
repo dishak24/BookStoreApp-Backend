@@ -15,6 +15,6 @@ namespace RepositoryLayer.Entity
         public string Email { get; set; }
         public string Password { get; set; }
         public string Mobile { get; set; }
-        public string Role { get; set; } = "User";
+        public string Role { get; set; }
     }
 }
