@@ -1,5 +1,6 @@
 ﻿using CommonLayer.Model;
 using ManagerLayer.Interfaces;
+using ManagerLayer.Services;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
 using System.Threading.Tasks;
@@ -73,14 +74,27 @@ namespace BookStoreApp.Controllers
                 return Unauthorized();
             }
 
-            var token = await tokenManager.GenerateToken(new JwtModel
+            var accessToken = await tokenManager.GenerateToken(new JwtModel
             {
                 Id = user.UserId,
                 Email = user.Email,
-                Role = "User"
+                Role = user.Role
             });
 
-            return Ok(new { Token = token });
+            // Generate Refresh Token
+            var refreshToken = await tokenManager.GenerateRefreshToken();
+
+            // Save the refresh token in the DB
+            // Save refresh token for the user
+            await tokenManager.SaveRefreshTokenInDb(user.UserId, refreshToken);
+
+
+            return Ok(new
+            {
+                Success = true,
+                Message = "Login successful",
+                Data = new { AccessToken = accessToken, RefreshToken = refreshToken }
+            });
         }
 
     }
