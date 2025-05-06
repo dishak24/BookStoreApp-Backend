@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonLayer.Model;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -67,20 +68,24 @@ namespace BookStoreApp
                     In = ParameterLocation.Header,
                     Description = "Enter you valid Token",
                 });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                                        {
-                                            {
-                                                new OpenApiSecurityScheme
-                                                {
-                                                    Reference = new OpenApiReference
-                                                    {
-                                                        Type = ReferenceType.SecurityScheme,
-                                                            Id = "Bearer"
-                                                    }
-                                                },
-                                                new string[] {}
-                                            }
-                                         });
+                //c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                //                        {
+                //                            {
+                //                                new OpenApiSecurityScheme
+                //                                {
+                //                                    Reference = new OpenApiReference
+                //                                    {
+                //                                        Type = ReferenceType.SecurityScheme,
+                //                                            Id = "Bearer"
+                //                                    }
+                //                                },
+                //                                new string[] {}
+                //                            }
+                //                         });
+
+                // Apply security only to methods with [Authorize]
+                c.OperationFilter<AuthorizeOptionFilter>();
+
             });
 
 
