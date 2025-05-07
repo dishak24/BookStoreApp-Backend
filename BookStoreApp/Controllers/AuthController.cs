@@ -14,8 +14,8 @@ using RepositoryLayer.Models;
 
 namespace BookStoreApp.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    //[Route("api/[controller]")]
+    //[ApiController]
     public class AuthController : ControllerBase
     {
         private readonly BookDBContext context;

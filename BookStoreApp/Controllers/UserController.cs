@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace BookStoreApp.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    //[Route("api/[controller]")]
+   // [ApiController]
     public class UserController : ControllerBase
     {
         private readonly IUserManager userManager;
