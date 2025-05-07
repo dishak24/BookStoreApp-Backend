@@ -61,7 +61,7 @@ namespace RepositoryLayer.Helpers
         }
 
         // to save the refresh token in the db
-        public async Task SaveRefreshTokenInDb(int userId, string refreshToken)
+        public async Task SaveUserRefreshTokenInDb(int userId, string refreshToken)
         {
             // get user by user id
             var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == userId); 
@@ -71,6 +71,24 @@ namespace RepositoryLayer.Helpers
                 // Assign the refresh token and set expiry time
                 user.RefreshToken = refreshToken;
                 user.RefreshTokenExpiryTime = DateTime.Now.AddDays(Convert.ToDouble(configuration["Jwt:RefreshTokenExpiration"])); // expiry from config
+
+                // Save changes directly
+                await context.SaveChangesAsync();
+            }
+        }
+
+
+        // to save the refresh token in the db
+        public async Task SaveAdminRefreshTokenInDb(int adminId, string refreshToken)
+        {
+            // get user by user id
+            var admin = await context.Admins.FirstOrDefaultAsync(u => u.AdminId == adminId);
+
+            if (admin != null)
+            {
+                // Assign the refresh token and set expiry time
+                admin.RefreshToken = refreshToken;
+                admin.RefreshTokenExpiryTime = DateTime.Now.AddDays(Convert.ToDouble(configuration["Jwt:RefreshTokenExpiration"])); // expiry from config
 
                 // Save changes directly
                 await context.SaveChangesAsync();
