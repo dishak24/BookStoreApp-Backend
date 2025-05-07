@@ -71,7 +71,7 @@ namespace BookStoreApp.Controllers
         //user login
         [HttpPost]
         [Route("userLogin")]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> LoginAsync(LoginModel model)
         {
             var result = await userManager.LoginAsync(model);
 
@@ -95,13 +95,13 @@ namespace BookStoreApp.Controllers
         //forgot password for user
         [HttpPost]
         [Route("userForgotPassword")]
-        public async Task<IActionResult> ForgotPassword(string Email)
+        public async Task<IActionResult> ForgotPasswordAsync(string Email)
         {
             try
             {
                 if (await userManager.CheckEmailExistAsync(Email))
                 {
-                    ForgotPasswordModel forgotPasswordModel = await userManager.ForgotPassword(Email);
+                    ForgotPasswordModel forgotPasswordModel = await userManager.ForgotPasswordAsync(Email);
 
                     Send send = new Send();
 
@@ -140,7 +140,7 @@ namespace BookStoreApp.Controllers
             try
             {
                 string email = User.FindFirst("EmailId").Value;
-                if (await userManager.ResetPassword(email, model))
+                if (await userManager.ResetPasswordAsync(email, model))
                 {
                     return Ok(new ResponseModel<string>
                     {

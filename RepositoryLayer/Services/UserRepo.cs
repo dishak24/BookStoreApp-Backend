@@ -86,7 +86,7 @@ namespace RepositoryLayer.Services
             });
 
             var refreshToken = await tokenManager.GenerateRefreshToken();
-            await tokenManager.SaveRefreshTokenInDb(user.UserId, refreshToken);
+            await tokenManager.SaveUserRefreshTokenInDb(user.UserId, refreshToken);
 
             return new LoginResponseModel
             {
