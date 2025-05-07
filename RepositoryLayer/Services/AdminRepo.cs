@@ -73,7 +73,8 @@ namespace RepositoryLayer.Services
             var user = await context.Admins
                 .FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == encodedPassword);
 
-            if (user == null) return null;
+            if (user == null) 
+                return null;
 
             var accessToken = await tokenManager.GenerateToken(new JwtModel
             {
@@ -83,7 +84,7 @@ namespace RepositoryLayer.Services
             });
 
             var refreshToken = await tokenManager.GenerateRefreshToken();
-            await tokenManager.SaveRefreshTokenInDb(user.AdminId, refreshToken);
+            await tokenManager.SaveAdminRefreshTokenInDb(user.AdminId, refreshToken);
 
             return new LoginResponseModel
             {
