@@ -121,7 +121,24 @@ namespace RepositoryLayer.Services
             return forgotPassword;
         }
 
+        //To Reset the password:
+        //1. check email exist or not
+        //2. then change password
+        public async Task<bool> ResetPassword(string email, ResetPasswordModel reset)
+        {
+            var user = context.Users.ToList().Find(u => u.Email == email);
 
+            if (await CheckEmailExistAsync(user.Email))
+            {
+                user.Password = EncodePasswordToBase64(reset.ConfirmPassword);
+                context.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
     }
 }

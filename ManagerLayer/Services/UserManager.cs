@@ -20,12 +20,14 @@ namespace ManagerLayer.Services
             this.userRepo = userRepo;
         }
 
+        //check email already exist or not
         public async Task<bool> CheckEmailExistAsync(string email)
         {
             return await userRepo.CheckEmailExistAsync(email);
         }
 
 
+        //register user
         public async Task<UserEntity> RegisterAsync(RegisterModel model)
         {
             return await userRepo.RegisterAsync(model);
@@ -37,9 +39,16 @@ namespace ManagerLayer.Services
             return await userRepo.LoginAsync(loginModel);
         }
 
+        //users forgot password
         public async Task<ForgotPasswordModel> ForgotPassword(string email)
         {
             return await userRepo.ForgotPassword(email);
+        }
+
+        //users reset password
+        public async Task<bool> ResetPassword(string email, ResetPasswordModel reset)
+        {
+            return await userRepo.ResetPassword(email, reset);
         }
     }
 }

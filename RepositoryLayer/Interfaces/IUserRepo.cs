@@ -19,8 +19,11 @@ namespace RepositoryLayer.Interfaces
         // user login 
         public Task<LoginResponseModel> LoginAsync(LoginModel loginModel);
 
-        //Forgot password
+        // users Forgot password
         public Task<ForgotPasswordModel> ForgotPassword(string email);
+
+        // users Reset password
+        public Task<bool> ResetPassword(string email, ResetPasswordModel reset);
 
 
     }

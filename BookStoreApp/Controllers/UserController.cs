@@ -1,6 +1,7 @@
 ﻿
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helpers;
@@ -128,8 +129,40 @@ namespace BookStoreApp.Controllers
                 throw e;
 
             }
+        }
 
+        //Reset Password API for user
+        [Authorize]
+        [HttpPost]
+        [Route("ResetPassword")]
+        public async Task<IActionResult> ResetPasswordAsync(ResetPasswordModel model)
+        {
+            try
+            {
+                string email = User.FindFirst("EmailId").Value;
+                if (await userManager.ResetPassword(email, model))
+                {
+                    return Ok(new ResponseModel<string>
+                    {
+                        Success = true,
+                        Message = "Done, Password is Reset !"
 
+                    });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "Resetting Password Failed !!!!!"
+
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
     }
