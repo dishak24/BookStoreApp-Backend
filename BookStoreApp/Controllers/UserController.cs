@@ -134,7 +134,7 @@ namespace BookStoreApp.Controllers
         //Reset Password API for user
         [Authorize]
         [HttpPost]
-        [Route("ResetPassword")]
+        [Route("usersResetPassword")]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordModel model)
         {
             try

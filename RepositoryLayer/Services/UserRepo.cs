@@ -101,7 +101,7 @@ namespace RepositoryLayer.Services
 
 
         //Forgot password method.
-        public async Task<ForgotPasswordModel> ForgotPassword(string email)
+        public async Task<ForgotPasswordModel> ForgotPasswordAsync(string email)
         {
             UserEntity user = context.Users.ToList().Find(user => user.Email == email);
 
@@ -124,7 +124,7 @@ namespace RepositoryLayer.Services
         //To Reset the password:
         //1. check email exist or not
         //2. then change password
-        public async Task<bool> ResetPassword(string email, ResetPasswordModel reset)
+        public async Task<bool> ResetPasswordAsync(string email, ResetPasswordModel reset)
         {
             var user = context.Users.ToList().Find(u => u.Email == email);
 
