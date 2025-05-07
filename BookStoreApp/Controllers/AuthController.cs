@@ -28,9 +28,10 @@ namespace BookStoreApp.Controllers
             this.jwtToken = jwtToken;
         }
 
+        // to refresh the user token
         [HttpPost()]
-        [Route("refreshToken")]
-        public async Task<IActionResult> RefreshTokenAsync(RefreshTokenModel model)
+        [Route("userRefreshToken")]
+        public async Task<IActionResult> UserRefreshTokenAsync(RefreshTokenModel model)
         {
             var user = context.Users.FirstOrDefault(u => u.RefreshToken == model.RefreshToken && 
                                                         u.RefreshTokenExpiryTime > DateTime.Now);
@@ -54,6 +55,47 @@ namespace BookStoreApp.Controllers
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshExpiryDays);
 
      
+            context.SaveChanges();
+
+            return Ok(new
+            {
+                success = true,
+                message = "Token refreshed",
+                data = new
+                {
+                    accessToken = newAccessToken,
+                    refreshToken = newRefreshToken
+                }
+            });
+        }
+
+        // to refresh the admin token
+        [HttpPost()]
+        [Route("adminRefreshToken")]
+        public async Task<IActionResult> AdminRefreshTokenAsync(RefreshTokenModel model)
+        {
+            var admin = context.Admins.FirstOrDefault(u => u.RefreshToken == model.RefreshToken &&
+                                                        u.RefreshTokenExpiryTime > DateTime.Now);
+
+            if (admin == null)
+            {
+                return Unauthorized(new { success = false, message = "Invalid or expired refresh token" });
+            }
+
+            var newAccessToken = await jwtToken.GenerateToken(new JwtModel
+            {
+                Id = admin.AdminId,
+                Email = admin.Email,
+                Role = admin.Role
+            });
+
+            var newRefreshToken = await jwtToken.GenerateRefreshToken();
+
+            admin.RefreshToken = newRefreshToken;
+            int refreshExpiryDays = int.Parse(configuration["Jwt:RefreshTokenExpiration"]);
+            admin.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshExpiryDays);
+
+
             context.SaveChanges();
 
             return Ok(new
