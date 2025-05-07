@@ -131,9 +131,8 @@ namespace BookStoreApp
             }
 
             //authentication must be on top
-            app.UseAuthentication();  // <- MUST be before Authorization
-            app.UseAuthorization();
-
+            app.UseAuthentication();
+            app.UseAuthorization(); // this is the key
 
             // This middleware serves generated Swagger document as a JSON endpoint
             app.UseSwagger();
@@ -149,7 +148,7 @@ namespace BookStoreApp
 
             app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
