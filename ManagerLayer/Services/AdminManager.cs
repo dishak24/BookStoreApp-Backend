@@ -38,9 +38,14 @@ namespace ManagerLayer.Services
         }
 
         //forgot password
-        public async Task<ForgotPasswordModel> ForgotPassword(string email)
+        public async Task<ForgotPasswordModel> ForgotPasswordAsync(string email)
         {
-            return await adminRepo.ForgotPassword(email);
+            return await adminRepo.ForgotPasswordAsync(email);
+        }
+
+        public async Task<bool> ResetPasswordAsync(string email, ResetPasswordModel reset)
+        {
+            return await adminRepo.ResetPasswordAsync(email, reset);
         }
     }
 }

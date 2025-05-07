@@ -12,13 +12,16 @@ namespace ManagerLayer.Interfaces
         //Checking email exist or not. Duplicate email not allowed
         public Task<bool> CheckEmailExistAsync(string email);
 
-        //Register User
+        //Register admin
         public Task<AdminEntity> RegisterAsync(RegisterModel model);
 
-        // user login 
+        // admin login 
         public Task<LoginResponseModel> LoginAsync(LoginModel loginModel);
 
-        //Forgot password method.
-        public Task<ForgotPasswordModel> ForgotPassword(string email);
+        // admin Forgot password method.
+        public Task<ForgotPasswordModel> ForgotPasswordAsync(string email);
+
+        // admins Reset password
+        public Task<bool> ResetPasswordAsync(string email, ResetPasswordModel reset);
     }
 }
