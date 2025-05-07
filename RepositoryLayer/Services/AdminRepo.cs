@@ -65,7 +65,35 @@ namespace RepositoryLayer.Services
             }
         }
 
-        
+        // user login 
+        public async Task<LoginResponseModel> LoginAsync(LoginModel loginModel)
+        {
+            var encodedPassword = EncodePasswordToBase64(loginModel.Password);
+            var user = await context.Admins
+                .FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == encodedPassword);
+
+            if (user == null) return null;
+
+            var accessToken = await tokenManager.GenerateToken(new JwtModel
+            {
+                Id = user.AdminId,
+                Email = user.Email,
+                Role = user.Role
+            });
+
+            var refreshToken = await tokenManager.GenerateRefreshToken();
+            await tokenManager.SaveRefreshTokenInDb(user.AdminId, refreshToken);
+
+            return new LoginResponseModel
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                UserId = user.AdminId,
+                Email = user.Email,
+                Role = user.Role
+            };
+
+        }
 
     }
 }

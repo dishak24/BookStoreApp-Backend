@@ -15,6 +15,7 @@ namespace ManagerLayer.Interfaces
         //Register User
         public Task<AdminEntity> RegisterAsync(RegisterModel model);
 
-        
+        // user login 
+        public Task<LoginResponseModel> LoginAsync(LoginModel loginModel);
     }
 }

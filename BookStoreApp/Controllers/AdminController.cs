@@ -61,6 +61,28 @@ namespace BookStoreApp.Controllers
         }
 
 
-        
+        //admin login
+        [HttpPost()]
+        [Route("adminLogin")]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            var result = await manager.LoginAsync(model);
+
+            if (result == null)
+            {
+                return Unauthorized(new { Success = false, Message = "Invalid credentials" });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Login successful",
+                    Data = result
+                });
+            }
+
+
+        }
     }
 }
