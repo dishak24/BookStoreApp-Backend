@@ -17,5 +17,8 @@ namespace ManagerLayer.Interfaces
 
         // user login 
         public Task<LoginResponseModel> LoginAsync(LoginModel loginModel);
+
+        //Forgot password method.
+        public Task<ForgotPasswordModel> ForgotPassword(string email);
     }
 }

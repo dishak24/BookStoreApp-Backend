@@ -6,6 +6,7 @@ using RepositoryLayer.Interfaces;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -93,6 +94,27 @@ namespace RepositoryLayer.Services
                 Role = user.Role
             };
 
+        }
+
+        //Forgot password method.
+        public async Task<ForgotPasswordModel> ForgotPassword(string email)
+        {
+            AdminEntity user = context.Admins.ToList().Find(user => user.Email == email);
+
+            ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
+            forgotPassword.Email = user.Email;
+            forgotPassword.UserId = user.AdminId;
+
+            forgotPassword.Token = await tokenManager.GenerateToken(new JwtModel
+            {
+                Email = user.Email,
+                Id = user.AdminId,
+                Role = user.Role
+               
+
+            });
+
+            return forgotPassword;
         }
 
     }

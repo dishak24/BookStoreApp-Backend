@@ -1,8 +1,11 @@
 ﻿using ManagerLayer.Interfaces;
+using ManagerLayer.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Helpers;
 using RepositoryLayer.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace BookStoreApp.Controllers
@@ -84,5 +87,45 @@ namespace BookStoreApp.Controllers
 
 
         }
+
+        //forgot password for admin
+        [HttpPost]
+        [Route("adminForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string Email)
+        {
+            try
+            {
+                if (await manager.CheckEmailExistAsync(Email))
+                {
+                    ForgotPasswordModel forgotPasswordModel =  await manager.ForgotPassword(Email);
+
+                    Send send = new Send();
+                    send.SendingMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
+                    return Ok(new ResponseModel<string> 
+                    { 
+                        Success = true, 
+                        Message = "Mail send Successfully" 
+                    });
+                }
+                else
+                {
+
+                    return BadRequest(new ResponseModel<string>() 
+                    { 
+                        Success = false, 
+                        Message = "Email not send " 
+                    });
+
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+
+            }
+
+
+        }
+
     }
 }
