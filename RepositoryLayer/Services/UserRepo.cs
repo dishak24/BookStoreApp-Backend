@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using RepositoryLayer.Helpers;
+using System.Linq;
+using RepositoryLayer.Migrations;
 
 namespace RepositoryLayer.Services
 {
@@ -96,6 +98,29 @@ namespace RepositoryLayer.Services
             };
 
         }
+
+
+        //Forgot password method.
+        public async Task<ForgotPasswordModel> ForgotPassword(string email)
+        {
+            UserEntity user = context.Users.ToList().Find(user => user.Email == email);
+
+            ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
+            forgotPassword.Email = user.Email;
+            forgotPassword.UserId = user.UserId;
+
+            forgotPassword.Token = await tokenManager.GenerateToken(new JwtModel
+            {
+                Email = user.Email,
+                Id = user.UserId,
+                Role = user.Role
+
+
+            });
+
+            return forgotPassword;
+        }
+
 
 
     }

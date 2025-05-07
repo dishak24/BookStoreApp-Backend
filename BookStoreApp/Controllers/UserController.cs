@@ -3,8 +3,10 @@ using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Helpers;
 using RepositoryLayer.Models;
 using RepositoryLayer.Services;
+using System;
 using System.Threading.Tasks;
 
 namespace BookStoreApp.Controllers
@@ -14,15 +16,17 @@ namespace BookStoreApp.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserManager userManager;
+        
 
         public UserController(IUserManager userManager)
         {
             this.userManager = userManager;
+            
         }
 
         //User registration
         [HttpPost]
-        [Route("userRegister")]
+        [Route("")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         {
             if (model == null)
@@ -64,7 +68,7 @@ namespace BookStoreApp.Controllers
 
 
         //user login
-        [HttpPost()]
+        [HttpPost]
         [Route("userLogin")]
         public async Task<IActionResult> Login(LoginModel model)
         {
@@ -85,6 +89,47 @@ namespace BookStoreApp.Controllers
             }
 
                 
+        }
+
+        //forgot password for user
+        [HttpPost]
+        [Route("userForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string Email)
+        {
+            try
+            {
+                if (await userManager.CheckEmailExistAsync(Email))
+                {
+                    ForgotPasswordModel forgotPasswordModel = await userManager.ForgotPassword(Email);
+
+                    Send send = new Send();
+
+                    send.SendingMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
+
+                    return Ok(new ResponseModel<string>
+                    {
+                        Success = true,
+                        Message = "Mail send Successfully"
+                    });
+                }
+                else
+                {
+
+                    return BadRequest(new ResponseModel<string>()
+                    {
+                        Success = false,
+                        Message = "Email not send "
+                    });
+
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+
+            }
+
+
         }
 
     }

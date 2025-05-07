@@ -48,6 +48,8 @@ namespace BookStoreApp
 
             //for token
             services.AddTransient<JwtTokenManager>();
+            services.AddTransient<Send>();
+
 
             //for user
             services.AddTransient<IAdminRepo, AdminRepo>();
