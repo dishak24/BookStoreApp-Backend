@@ -1,4 +1,4 @@
-﻿using CommonLayer.Model;
+﻿
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +9,8 @@ using RepositoryLayer.Context;
 using ManagerLayer.Interfaces;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using RepositoryLayer.Helpers;
+using RepositoryLayer.Models;
 
 namespace BookStoreApp.Controllers
 {
@@ -17,13 +19,13 @@ namespace BookStoreApp.Controllers
     public class AuthController : ControllerBase
     {
         private readonly BookDBContext context;
-        private readonly IJwtTokenManager jwtTokenManager;
         private readonly IConfiguration configuration;
-        public AuthController(BookDBContext context, IJwtTokenManager jwtTokenManager, IConfiguration configuration)
+        private readonly JwtTokenManager jwtToken;
+        public AuthController(BookDBContext context, IConfiguration configuration, JwtTokenManager jwtToken)
         {
-            this.jwtTokenManager = jwtTokenManager;
             this.context = context;
             this.configuration = configuration;
+            this.jwtToken = jwtToken;
         }
 
         [HttpPost()]
@@ -38,14 +40,14 @@ namespace BookStoreApp.Controllers
                 return Unauthorized(new { success = false, message = "Invalid or expired refresh token" });
             }
 
-            var newAccessToken = await jwtTokenManager.GenerateToken(new JwtModel
+            var newAccessToken = await jwtToken.GenerateToken(new JwtModel
             {
                 Id = user.UserId,
                 Email = user.Email,
                 Role = user.Role
             });
 
-            var newRefreshToken = await jwtTokenManager.GenerateRefreshToken();
+            var newRefreshToken = await jwtToken.GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
             int refreshExpiryDays = int.Parse(configuration["Jwt:RefreshTokenExpiration"]);

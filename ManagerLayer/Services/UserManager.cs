@@ -1,5 +1,4 @@
-﻿using CommonLayer.Model;
-using ManagerLayer.Interfaces;
+﻿using ManagerLayer.Interfaces;
 using RepositoryLayer.Entity;
 using RepositoryLayer;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
 
 namespace ManagerLayer.Services
 {
@@ -32,7 +32,7 @@ namespace ManagerLayer.Services
         }
 
         // user login 
-        public async Task<UserEntity> LoginAsync(LoginModel loginModel)
+        public async Task<LoginResponseModel> LoginAsync(LoginModel loginModel)
         {
             return await userRepo.LoginAsync(loginModel);
         }

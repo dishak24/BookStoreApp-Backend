@@ -1,9 +1,9 @@
-﻿using CommonLayer.Model;
-using ManagerLayer.Interfaces;
+﻿
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Context;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,9 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace ManagerLayer.Services
+namespace RepositoryLayer.Helpers
 {
-    public class JwtTokenManager : IJwtTokenManager
+    public class JwtTokenManager
     {
         private readonly IConfiguration configuration;
         private readonly BookDBContext context;
@@ -45,6 +45,7 @@ namespace ManagerLayer.Services
                 signingCredentials: credentials
             );
 
+            //convert token to string using writeToken()
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 

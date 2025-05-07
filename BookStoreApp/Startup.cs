@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommonLayer.Model;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,7 +18,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RepositoryLayer.Context;
+using RepositoryLayer.Helpers;
 using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
 using RepositoryLayer.Services;
 
 namespace BookStoreApp
@@ -46,7 +47,8 @@ namespace BookStoreApp
             services.AddTransient<IUserManager, UserManager>();
 
             //for token
-            services.AddTransient<IJwtTokenManager, JwtTokenManager>();
+            services.AddTransient<JwtTokenManager>();
+           
 
             //For swagger
             //services.AddSwaggerGen();

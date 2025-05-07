@@ -1,8 +1,10 @@
-﻿using CommonLayer.Model;
+﻿
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Models;
+using RepositoryLayer.Services;
 using System.Threading.Tasks;
 
 namespace BookStoreApp.Controllers
@@ -12,12 +14,10 @@ namespace BookStoreApp.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserManager userManager;
-        private readonly IJwtTokenManager tokenManager;
 
-        public UserController(IUserManager userManager , IJwtTokenManager tokenManager)
+        public UserController(IUserManager userManager)
         {
             this.userManager = userManager;
-            this.tokenManager = tokenManager;
         }
 
         //User registration
@@ -68,33 +68,23 @@ namespace BookStoreApp.Controllers
         [Route("userLogin")]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            var user = await userManager.LoginAsync(model);
-            if (user == null)
+            var result = await userManager.LoginAsync(model);
+
+            if (result == null)
             {
-                return Unauthorized();
+                return Unauthorized(new { Success = false, Message = "Invalid credentials" });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Login successful",
+                    Data = result
+                });
             }
 
-            var accessToken = await tokenManager.GenerateToken(new JwtModel
-            {
-                Id = user.UserId,
-                Email = user.Email,
-                Role = user.Role
-            });
-
-            // Generate Refresh Token
-            var refreshToken = await tokenManager.GenerateRefreshToken();
-
-            // Save the refresh token in the DB
-            // Save refresh token for the user
-            await tokenManager.SaveRefreshTokenInDb(user.UserId, refreshToken);
-
-
-            return Ok(new
-            {
-                Success = true,
-                Message = "Login successful",
-                Data = new { AccessToken = accessToken, RefreshToken = refreshToken }
-            });
+                
         }
 
     }

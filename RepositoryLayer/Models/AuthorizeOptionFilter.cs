@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CommonLayer.Model
+namespace RepositoryLayer.Models
 {
     public class AuthorizeOptionFilter : IOperationFilter
     {

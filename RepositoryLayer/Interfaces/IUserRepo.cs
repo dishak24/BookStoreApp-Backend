@@ -1,5 +1,6 @@
-﻿using CommonLayer.Model;
+﻿
 using RepositoryLayer.Entity;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +17,7 @@ namespace RepositoryLayer.Interfaces
         public Task<UserEntity> RegisterAsync(RegisterModel model);
 
         // user login 
-        public Task<UserEntity> LoginAsync(LoginModel loginModel);
+        public Task<LoginResponseModel> LoginAsync(LoginModel loginModel);
 
 
     }

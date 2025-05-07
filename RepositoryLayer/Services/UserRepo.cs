@@ -1,23 +1,27 @@
-﻿using CommonLayer.Model;
+﻿
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using RepositoryLayer.Helpers;
 
 namespace RepositoryLayer.Services
 {
     public class UserRepo : IUserRepo
     {
         private readonly BookDBContext context;
-        
-        public UserRepo(BookDBContext context)
+        private readonly JwtTokenManager tokenManager;
+
+        public UserRepo(BookDBContext context, JwtTokenManager tokenManager)
         {
             this.context = context;
+            this.tokenManager = tokenManager;
         }
 
         //Checking email exist or not. Duplicate email not allowed
@@ -64,15 +68,33 @@ namespace RepositoryLayer.Services
         }
 
         // user login 
-        public async Task<UserEntity> LoginAsync(LoginModel loginModel)
+        public async Task<LoginResponseModel> LoginAsync(LoginModel loginModel)
         {
-            var checkUser = await this.context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == EncodePasswordToBase64(loginModel.Password));
-            if (checkUser != null)
+            var encodedPassword = EncodePasswordToBase64(loginModel.Password);
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == encodedPassword);
+
+            if (user == null) return null;
+
+            var accessToken = await tokenManager.GenerateToken(new JwtModel
             {
-                return checkUser;
-              
-            }
-            return null;
+                Id = user.UserId,
+                Email = user.Email,
+                Role = user.Role
+            });
+
+            var refreshToken = await tokenManager.GenerateRefreshToken();
+            await tokenManager.SaveRefreshTokenInDb(user.UserId, refreshToken);
+
+            return new LoginResponseModel
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                UserId = user.UserId,
+                Email = user.Email,
+                Role = user.Role
+            };
+
         }
 
 
