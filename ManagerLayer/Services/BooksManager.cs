@@ -29,5 +29,11 @@ namespace ManagerLayer.Services
         {
             return await bookRepo.GetBookByIdAsync(id);
         }
+
+        //update book
+        public async Task<bool> UpdateBookAsync(int id, Books book)
+        {
+            return await bookRepo.UpdateBookAsync(id, book);
+        }
     }
 }

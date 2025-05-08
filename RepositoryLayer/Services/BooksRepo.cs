@@ -29,5 +29,27 @@ namespace RepositoryLayer.Services
         {
             return await context.Books.FindAsync(id);
         }
+
+        //update book
+        public async Task<bool> UpdateBookAsync(int id, Books updatedBook)
+        {
+            var book = await context.Books.FindAsync(id);
+            if (book == null)
+            {
+                return false;
+            }
+                
+            book.BookName = updatedBook.BookName;
+            book.Author = updatedBook.Author;
+            book.Description = updatedBook.Description;
+            book.Price = updatedBook.Price;
+            book.DiscountPrice = updatedBook.DiscountPrice;
+            book.Quantity = updatedBook.Quantity;
+            book.BookImage = updatedBook.BookImage;
+            book.UpdatedAt = DateTime.Now;
+
+            await context.SaveChangesAsync();
+            return true;
+        }
     }
 }

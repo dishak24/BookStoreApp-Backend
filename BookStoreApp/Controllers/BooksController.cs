@@ -136,8 +136,49 @@ namespace BookStoreApp.Controllers
                     Data = e.Message
                 });
 
+            }            
+        }
+
+
+        // Only Admin can update
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBook(int id, Books updatedBook)
+        {
+            try
+            {
+                var result = await booksManager.UpdateBookAsync(id, updatedBook);
+                if (result)
+                {
+                    return Ok(new ResponseModel<bool>
+                    {
+                        Success = true,
+                        Message = " Book details updated Successfully",
+                        Data = result
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<bool>
+                    {
+                        Success = false,
+                        Message = "Book Id not found !!!",
+                        Data = result
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
             }
             
         }
+
     }
 }

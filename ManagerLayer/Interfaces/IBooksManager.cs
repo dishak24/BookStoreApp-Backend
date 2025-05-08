@@ -14,5 +14,8 @@ namespace ManagerLayer.Interfaces
 
         //get book by id
         public Task<Books> GetBookByIdAsync(int id);
+
+        //update book
+        public Task<bool> UpdateBookAsync(int id, Books book);
     }
 }
