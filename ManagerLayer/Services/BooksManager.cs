@@ -23,5 +23,11 @@ namespace ManagerLayer.Services
         {
             return await bookRepo.GetAllBooksAsync();
         }
+
+        //to get book by id
+        public async Task<Books> GetBookByIdAsync(int id)
+        {
+            return await bookRepo.GetBookByIdAsync(id);
+        }
     }
 }

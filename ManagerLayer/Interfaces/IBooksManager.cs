@@ -11,5 +11,8 @@ namespace ManagerLayer.Interfaces
 
         //to get all books
         public Task<IEnumerable<Books>> GetAllBooksAsync();
+
+        //get book by id
+        public Task<Books> GetBookByIdAsync(int id);
     }
 }

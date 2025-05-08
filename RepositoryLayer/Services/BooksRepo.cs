@@ -24,5 +24,10 @@ namespace RepositoryLayer.Services
             return await context.Books.ToListAsync();
         }
 
+        //to get book by id
+        public async Task<Books> GetBookByIdAsync(int id)
+        {
+            return await context.Books.FindAsync(id);
+        }
     }
 }

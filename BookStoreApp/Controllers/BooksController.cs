@@ -8,6 +8,7 @@ using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookStoreApp.Controllers
 {
@@ -68,6 +69,63 @@ namespace BookStoreApp.Controllers
                     });
                 }
                 
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+            
+        }
+
+        //to get book by id
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookById(int id)
+        {
+            try
+            {
+                // Check if user is authenticated
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "You are not authorized! Please login to continue.",
+
+                    });
+                }
+
+                // check if user has required role
+                if (!(User.IsInRole("Admin") || User.IsInRole("User")))
+                {
+                    return Forbid();
+                }
+
+                var book = await booksManager.GetBookByIdAsync(id);
+                if (book == null)
+                {
+                    return NotFound(new ResponseModel<Books>
+                    {
+                        Success = false,
+                        Message = "Book Id not found !!!",
+                        Data = book
+                    });
+                }
+                else
+                {
+                    return Ok(new ResponseModel<Books>
+                    {
+                        Success = true,
+                        Message = "Got Book details Successfully",
+                        Data = book
+                    });
+                }                
             }
             catch (Exception e)
             {
