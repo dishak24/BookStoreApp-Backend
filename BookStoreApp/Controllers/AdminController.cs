@@ -1,32 +1,29 @@
-﻿
-using ManagerLayer.Interfaces;
+﻿using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helpers;
 using RepositoryLayer.Models;
-using RepositoryLayer.Services;
 using System;
 using System.Threading.Tasks;
 
 namespace BookStoreApp.Controllers
 {
-    [Route("api/users")]
+    [Route("api/admins")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AdminController : ControllerBase
     {
-        private readonly IUserManager userManager;
-        
+        private readonly IAdminManager manager;
 
-        public UserController(IUserManager userManager)
+        public AdminController(IAdminManager manager)
         {
-            this.userManager = userManager;
-            
+            this.manager = manager;
         }
 
-        //User registration
+        //admin registration
         [HttpPost]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         {
@@ -37,7 +34,7 @@ namespace BookStoreApp.Controllers
                     return BadRequest("data is null");
                 }
                 // to checking email already used or not
-                var check = await userManager.CheckEmailExistAsync(model.Email);
+                var check = await manager.CheckEmailExistAsync(model.Email);
 
                 if (check)
                 {
@@ -49,18 +46,18 @@ namespace BookStoreApp.Controllers
                 }
                 else
                 {
-                    var result = await userManager.RegisterAsync(model);
+                    var result = await manager.RegisterAsync(model);
 
                     if (result != null)
                     {
-                        return Ok(new ResponseModel<UserEntity>
+                        return Ok(new ResponseModel<AdminEntity>
                         {
                             Success = true,
-                            Message = "Registration Successfull !",
+                            Message = "Registered Successfully !",
                             Data = result
                         });
                     }
-                    return BadRequest(new ResponseModel<UserEntity>
+                    return BadRequest(new ResponseModel<AdminEntity>
                     {
                         Success = false,
                         Message = "Registration failed !!!!",
@@ -82,13 +79,13 @@ namespace BookStoreApp.Controllers
         }
 
 
-        //user login
+        //admin login
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(LoginModel model)
         {
             try
             {
-                var result = await userManager.LoginAsync(model);
+                var result = await manager.LoginAsync(model);
 
                 if (result == null)
                 {
@@ -115,37 +112,35 @@ namespace BookStoreApp.Controllers
                 });
 
             }
-           
-                
+            
+
         }
 
-        //forgot password for user
+        //forgot password for admin
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPasswordAsync(string Email)
         {
             try
             {
-                if (await userManager.CheckEmailExistAsync(Email))
+                if (await manager.CheckEmailExistAsync(Email))
                 {
-                    ForgotPasswordModel forgotPasswordModel = await userManager.ForgotPasswordAsync(Email);
+                    ForgotPasswordModel forgotPasswordModel =  await manager.ForgotPasswordAsync(Email);
 
                     Send send = new Send();
-
                     send.SendingMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
-
-                    return Ok(new ResponseModel<string>
-                    {
-                        Success = true,
-                        Message = "Mail send Successfully"
+                    return Ok(new ResponseModel<string> 
+                    { 
+                        Success = true, 
+                        Message = "Mail send Successfully" 
                     });
                 }
                 else
                 {
 
-                    return BadRequest(new ResponseModel<string>()
-                    {
-                        Success = false,
-                        Message = "Email not send "
+                    return BadRequest(new ResponseModel<string>() 
+                    { 
+                        Success = false, 
+                        Message = "Email not send " 
                     });
 
                 }
@@ -162,16 +157,15 @@ namespace BookStoreApp.Controllers
             }
         }
 
-        //Reset Password API for user
+        //Reset Password API for admin
         [Authorize]
         [HttpPost("reset-password")]
-        
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordModel model)
         {
             try
             {
                 string email = User.FindFirst("EmailId").Value;
-                if (await userManager.ResetPasswordAsync(email, model))
+                if (await manager.ResetPasswordAsync(email, model))
                 {
                     return Ok(new ResponseModel<string>
                     {
@@ -198,7 +192,6 @@ namespace BookStoreApp.Controllers
                     Message = "An internal error occurred. Please try again later.",
                     Data = e.Message
                 });
-
             }
         }
 

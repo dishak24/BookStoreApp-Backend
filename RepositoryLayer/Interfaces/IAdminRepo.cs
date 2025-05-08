@@ -1,5 +1,4 @@
-﻿
-using RepositoryLayer.Entity;
+﻿using RepositoryLayer.Entity;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -8,23 +7,22 @@ using System.Threading.Tasks;
 
 namespace RepositoryLayer.Interfaces
 {
-    public interface IUserRepo
+    public interface IAdminRepo
     {
         //Checking email exist or not. Duplicate email not allowed
         public Task<bool> CheckEmailExistAsync(string email);
 
-        //Register User
-        public Task<UserEntity> RegisterAsync(RegisterModel model);
+        //Register admin
+        public Task<AdminEntity> RegisterAsync(RegisterModel model);
 
-        // user login 
+        // admins login 
         public Task<LoginResponseModel> LoginAsync(LoginModel loginModel);
 
-        // users Forgot password
+        //admins Forgot password method.
         public Task<ForgotPasswordModel> ForgotPasswordAsync(string email);
 
-        // users Reset password
+        // admins Reset password
         public Task<bool> ResetPasswordAsync(string email, ResetPasswordModel reset);
-
 
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommonLayer.Model;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,7 +18,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RepositoryLayer.Context;
+using RepositoryLayer.Helpers;
 using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
 using RepositoryLayer.Services;
 
 namespace BookStoreApp
@@ -46,7 +47,14 @@ namespace BookStoreApp
             services.AddTransient<IUserManager, UserManager>();
 
             //for token
-            services.AddTransient<IJwtTokenManager, JwtTokenManager>();
+            services.AddTransient<JwtTokenManager>();
+            services.AddTransient<Send>();
+
+
+            //for user
+            services.AddTransient<IAdminRepo, AdminRepo>();
+            services.AddTransient<IAdminManager, AdminManager>();
+
 
             //For swagger
             //services.AddSwaggerGen();
@@ -83,7 +91,6 @@ namespace BookStoreApp
                 //                            }
                 //                         });
 
-                // Apply security only to methods with [Authorize]
                 c.OperationFilter<AuthorizeOptionFilter>();
 
             });
@@ -124,9 +131,8 @@ namespace BookStoreApp
             }
 
             //authentication must be on top
-            app.UseAuthentication();  // <- MUST be before Authorization
-            app.UseAuthorization();
-
+            app.UseAuthentication();
+            app.UseAuthorization(); // this is the key
 
             // This middleware serves generated Swagger document as a JSON endpoint
             app.UseSwagger();
@@ -142,7 +148,7 @@ namespace BookStoreApp
 
             app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

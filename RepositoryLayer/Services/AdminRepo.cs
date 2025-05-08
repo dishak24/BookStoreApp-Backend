@@ -1,26 +1,23 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Helpers;
 using RepositoryLayer.Interfaces;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RepositoryLayer.Helpers;
-using System.Linq;
-using RepositoryLayer.Migrations;
 
 namespace RepositoryLayer.Services
 {
-    public class UserRepo : IUserRepo
+    public class AdminRepo : IAdminRepo
     {
         private readonly BookDBContext context;
         private readonly JwtTokenManager tokenManager;
 
-        public UserRepo(BookDBContext context, JwtTokenManager tokenManager)
+        public AdminRepo(BookDBContext context, JwtTokenManager tokenManager)
         {
             this.context = context;
             this.tokenManager = tokenManager;
@@ -29,7 +26,7 @@ namespace RepositoryLayer.Services
         //Checking email exist or not. Duplicate email not allowed
         public async Task<bool> CheckEmailExistAsync(string email)
         {
-            var result = await this.context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var result = await this.context.Admins.FirstOrDefaultAsync(x => x.Email == email);
             if (result == null)
             {
                 return false;
@@ -37,18 +34,18 @@ namespace RepositoryLayer.Services
             return true;
         }
 
-        //Register User
-        public async Task<UserEntity> RegisterAsync(RegisterModel model)
+        //Register Admin
+        public async Task<AdminEntity> RegisterAsync(RegisterModel model)
         {
-            UserEntity user = new UserEntity();
+            AdminEntity user = new AdminEntity();
 
             user.FullName = model.FullName;
             user.Email = model.Email;
             user.Mobile = model.Mobile;
-            user.Role = "User";
+            user.Role = "Admin";
             user.Password = EncodePasswordToBase64(model.Password);
 
-            await context.Users.AddAsync(user);
+            await context.Admins.AddAsync(user);
             context.SaveChanges();
             return user;
         }
@@ -73,48 +70,48 @@ namespace RepositoryLayer.Services
         public async Task<LoginResponseModel> LoginAsync(LoginModel loginModel)
         {
             var encodedPassword = EncodePasswordToBase64(loginModel.Password);
-            var user = await context.Users
+            var user = await context.Admins
                 .FirstOrDefaultAsync(u => u.Email == loginModel.Email && u.Password == encodedPassword);
 
-            if (user == null) return null;
+            if (user == null) 
+                return null;
 
             var accessToken = await tokenManager.GenerateToken(new JwtModel
             {
-                Id = user.UserId,
+                Id = user.AdminId,
                 Email = user.Email,
                 Role = user.Role
             });
 
             var refreshToken = await tokenManager.GenerateRefreshToken();
-            await tokenManager.SaveUserRefreshTokenInDb(user.UserId, refreshToken);
+            await tokenManager.SaveAdminRefreshTokenInDb(user.AdminId, refreshToken);
 
             return new LoginResponseModel
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                UserId = user.UserId,
+                UserId = user.AdminId,
                 Email = user.Email,
                 Role = user.Role
             };
 
         }
 
-
         //Forgot password method.
         public async Task<ForgotPasswordModel> ForgotPasswordAsync(string email)
         {
-            UserEntity user = context.Users.ToList().Find(user => user.Email == email);
+            AdminEntity user = context.Admins.ToList().Find(user => user.Email == email);
 
             ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
             forgotPassword.Email = user.Email;
-            forgotPassword.UserId = user.UserId;
+            forgotPassword.UserId = user.AdminId;
 
             forgotPassword.Token = await tokenManager.GenerateToken(new JwtModel
             {
                 Email = user.Email,
-                Id = user.UserId,
+                Id = user.AdminId,
                 Role = user.Role
-
+               
 
             });
 
@@ -126,7 +123,7 @@ namespace RepositoryLayer.Services
         //2. then change password
         public async Task<bool> ResetPasswordAsync(string email, ResetPasswordModel reset)
         {
-            var user = context.Users.ToList().Find(u => u.Email == email);
+            var user = context.Admins.ToList().Find(u => u.Email == email);
 
             if (await CheckEmailExistAsync(user.Email))
             {
