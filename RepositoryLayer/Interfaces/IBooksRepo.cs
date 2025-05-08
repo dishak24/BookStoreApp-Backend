@@ -1,0 +1,14 @@
+﻿using RepositoryLayer.Entity;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RepositoryLayer.Interfaces
+{
+    public interface IBooksRepo
+    {
+        //to get all books
+        Task<IEnumerable<Books>> GetAllBooksAsync();
+    }
+}
