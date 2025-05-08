@@ -35,5 +35,12 @@ namespace ManagerLayer.Services
         {
             return await bookRepo.UpdateBookAsync(id, book);
         }
+
+        //delete book
+
+        public async Task<bool> DeleteBookAsync(int id)
+        {
+            return await bookRepo.DeleteBookAsync(id);
+        }
     }
 }

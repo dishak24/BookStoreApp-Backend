@@ -16,5 +16,8 @@ namespace RepositoryLayer.Interfaces
 
         //update book
         public Task<bool> UpdateBookAsync(int id, Books book);
+
+        //delete book
+        public Task<bool> DeleteBookAsync(int id);
     }
 }

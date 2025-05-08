@@ -147,6 +147,23 @@ namespace BookStoreApp.Controllers
         {
             try
             {
+                // Check if user is authenticated
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "You are not authorized! Please login to continue.",
+
+                    });
+                }
+
+                // check admin has required role
+                if (!(User.IsInRole("Admin")))
+                {
+                    return Forbid();
+                }
+
                 var result = await booksManager.UpdateBookAsync(id, updatedBook);
                 if (result)
                 {
@@ -178,6 +195,65 @@ namespace BookStoreApp.Controllers
 
             }
             
+        }
+
+        // Only Admin can delete
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBook(int id)
+        {
+            try
+            {
+                // Check if user is authenticated
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "You are not authorized! Please login to continue.",
+
+                    });
+                }
+
+                // check admin has required role
+                if (!(User.IsInRole("Admin")))
+                {
+                    return Forbid();
+                }
+
+                var result = await booksManager.DeleteBookAsync(id);
+
+                if (result)
+                {
+                    return Ok(new ResponseModel<bool>
+                    {
+                        Success = true,
+                        Message = " Book deleted Successfully",
+                        Data = result
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<bool>
+                    {
+                        Success = false,
+                        Message = "Book Id not found !!!",
+                        Data = result
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+           
         }
 
     }

@@ -51,5 +51,22 @@ namespace RepositoryLayer.Services
             await context.SaveChangesAsync();
             return true;
         }
+
+
+        //delete book
+        public async Task<bool> DeleteBookAsync(int id)
+        {
+            var book = await context.Books.FindAsync(id);
+            if (book == null)
+            {
+                return false;
+            }
+
+            context.Books.Remove(book);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
+
     }
 }
