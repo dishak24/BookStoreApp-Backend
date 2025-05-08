@@ -8,6 +8,7 @@ using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,8 @@ namespace BookStoreApp
 
             //for configure database connection
             services.AddDbContext<BookDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
+            services.AddDbContext<BooksContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
+
 
             //for user
             services.AddTransient<IUserRepo, UserRepo>();
@@ -54,6 +57,10 @@ namespace BookStoreApp
             //for user
             services.AddTransient<IAdminRepo, AdminRepo>();
             services.AddTransient<IAdminManager, AdminManager>();
+
+            //for books
+            services.AddTransient<IBooksManager, BooksManager>();
+            services.AddTransient<IBooksRepo, BooksRepo>();
 
 
             //For swagger
@@ -115,6 +122,28 @@ namespace BookStoreApp
                     ValidAudience = Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
+
+                // to handle missing/invalid token globally
+                o.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse(); // Prevent default 401 response
+
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        var result = System.Text.Json.JsonSerializer.Serialize(new
+                        {
+                            success = false,
+                            message = "Authorization token is missing or invalid! Please login to access this resource."
+                        });
+
+                        return context.Response.WriteAsync(result);
+                    }
+                };
+
+
             });
 
             
