@@ -90,11 +90,11 @@ namespace RepositoryLayer.Services
 
             return new LoginResponseModel
             {
+                Name = user.FullName,
+                //Email = user.Email,
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                UserId = user.UserId,
-                Email = user.Email,
-                Role = user.Role
+                RefreshToken = refreshToken 
+                
             };
 
         }
