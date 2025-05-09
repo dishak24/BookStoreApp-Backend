@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
@@ -83,21 +84,7 @@ namespace BookStoreApp
                     In = ParameterLocation.Header,
                     Description = "Enter you valid Token",
                 });
-                //c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //                        {
-                //                            {
-                //                                new OpenApiSecurityScheme
-                //                                {
-                //                                    Reference = new OpenApiReference
-                //                                    {
-                //                                        Type = ReferenceType.SecurityScheme,
-                //                                            Id = "Bearer"
-                //                                    }
-                //                                },
-                //                                new string[] {}
-                //                            }
-                //                         });
-
+                
                 c.OperationFilter<AuthorizeOptionFilter>();
 
             });
@@ -140,6 +127,22 @@ namespace BookStoreApp
                         });
 
                         return context.Response.WriteAsync(result);
+                    },
+
+                    // 403 - Forbidden (valid token, but not Admin)
+                    OnForbidden = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        context.Response.ContentType = "application/json";
+
+                        var result = JsonSerializer.Serialize(new ResponseModel<string>
+                        {
+                            Success = false,
+                            Message = "Access denied! You do not have the authorization to perform this action.",
+                            Data = null
+                        });
+
+                        return context.Response.WriteAsync(result);
                     }
                 };
 
@@ -169,7 +172,7 @@ namespace BookStoreApp
             //This middleware serves the Swagger documentation UI
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Employee API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Stores API V1");
             });
 
 

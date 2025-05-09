@@ -1,4 +1,5 @@
 ﻿using RepositoryLayer.Entity;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,7 @@ namespace RepositoryLayer.Interfaces
         public Task<Books> GetBookByIdAsync(int id);
 
         //update book
-        public Task<bool> UpdateBookAsync(int id, Books book);
+        public Task<bool> UpdateBookAsync(int id, BookModel book);
 
         //delete book
         public Task<bool> DeleteBookAsync(int id);

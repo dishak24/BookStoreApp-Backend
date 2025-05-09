@@ -1,6 +1,7 @@
 ﻿using ManagerLayer.Interfaces;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,7 +32,7 @@ namespace ManagerLayer.Services
         }
 
         //update book
-        public async Task<bool> UpdateBookAsync(int id, Books book)
+        public async Task<bool> UpdateBookAsync(int id, BookModel book)
         {
             return await bookRepo.UpdateBookAsync(id, book);
         }

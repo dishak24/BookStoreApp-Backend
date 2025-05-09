@@ -32,23 +32,6 @@ namespace BookStoreApp.Controllers
             try
             {
 
-                // Check if user is authenticated
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "You are not authorized! Please login to continue.",
-                        
-                    });
-                }
-
-                // check if user has required role
-                if (!(User.IsInRole("Admin") || User.IsInRole("User")))
-                {
-                    return Forbid();
-                }
-
                 var books = await booksManager.GetAllBooksAsync();
                 if (books != null)
                 {
@@ -90,23 +73,6 @@ namespace BookStoreApp.Controllers
         {
             try
             {
-                // Check if user is authenticated
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "You are not authorized! Please login to continue.",
-
-                    });
-                }
-
-                // check if user has required role
-                if (!(User.IsInRole("Admin") || User.IsInRole("User")))
-                {
-                    return Forbid();
-                }
-
                 var book = await booksManager.GetBookByIdAsync(id);
                 if (book == null)
                 {
@@ -143,27 +109,10 @@ namespace BookStoreApp.Controllers
         // Only Admin can update
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(int id, Books updatedBook)
+        public async Task<IActionResult> UpdateBook(int id, BookModel updatedBook)
         {
             try
             {
-                // Check if user is authenticated
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "You are not authorized! Please login to continue.",
-
-                    });
-                }
-
-                // check admin has required role
-                if (!(User.IsInRole("Admin")))
-                {
-                    return Forbid();
-                }
-
                 var result = await booksManager.UpdateBookAsync(id, updatedBook);
                 if (result)
                 {
@@ -204,23 +153,6 @@ namespace BookStoreApp.Controllers
         {
             try
             {
-                // Check if user is authenticated
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "You are not authorized! Please login to continue.",
-
-                    });
-                }
-
-                // check admin has required role
-                if (!(User.IsInRole("Admin")))
-                {
-                    return Forbid();
-                }
-
                 var result = await booksManager.DeleteBookAsync(id);
 
                 if (result)

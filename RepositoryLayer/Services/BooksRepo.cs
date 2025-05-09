@@ -2,6 +2,7 @@
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,7 +32,7 @@ namespace RepositoryLayer.Services
         }
 
         //update book
-        public async Task<bool> UpdateBookAsync(int id, Books updatedBook)
+        public async Task<bool> UpdateBookAsync(int id, BookModel updatedBook)
         {
             var book = await context.Books.FindAsync(id);
             if (book == null)
