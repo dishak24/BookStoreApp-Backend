@@ -105,6 +105,45 @@ namespace RepositoryLayer.Services
                .ToListAsync();
         }
 
+        //search books by book name, author name , or recently added books
+        public async Task<IEnumerable<BookResponseModel>> SearchBooksAsync(string keyword)
+        {
+            keyword = keyword.ToLower();
+
+            if (keyword == "recent" || keyword == "latest" || keyword == "recent book" || keyword == "latest book")
+            {
+                return await context.Books
+                    .OrderByDescending(b => b.CreatedAt)
+                    .Take(5)
+                    .Select(b => new BookResponseModel
+                    {                        
+                        BookName = b.BookName,
+                        Author = b.Author,
+                        Description = b.Description,
+                        Price = b.Price,
+                        DiscountPrice = b.DiscountPrice,
+                        Quantity = b.Quantity,
+                        BookImage = b.BookImage
+                    })
+                    .ToListAsync();
+            }
+
+            return await context.Books
+                .Where(b => b.BookName.ToLower().Contains(keyword) ||  b.Author.ToLower().Contains(keyword))
+                .Select(b => new BookResponseModel
+                {         
+                    BookName = b.BookName,
+                    Author = b.Author,
+                    Description = b.Description,
+                    Price = b.Price,
+                    DiscountPrice = b.DiscountPrice,
+                    Quantity = b.Quantity,
+                    BookImage = b.BookImage
+                })
+                .ToListAsync();
+        }
+
+
 
     }
 }

@@ -270,5 +270,51 @@ namespace BookStoreApp.Controllers
 
         }
 
+        // search books
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("search")]        
+        public async Task<IActionResult> SearchBooksAsync([FromQuery] string keyword)
+        {
+            try
+            {
+                var books = await booksManager.SearchBooksAsync(keyword);
+                if (string.IsNullOrWhiteSpace(keyword))
+                {
+                    return BadRequest("Keyword cannot be empty !!");
+                }
+                   
+                if (books != null)
+                {
+                    return Ok(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = true,
+                        Message = "successfully getting searched books.",
+                        Data = books
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = false,
+                        Message = "Failed to search !!",
+                        Data = books
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+
+        }
+
     }
 }

@@ -27,5 +27,8 @@ namespace ManagerLayer.Interfaces
 
         // sort books by price in descending order 
         public Task<IEnumerable<BookResponseModel>> GetBooksByPriceDescAsync();
+
+        //search books by book name, author name , or recently added books
+        public Task<IEnumerable<BookResponseModel>> SearchBooksAsync(string keyword);
     }
 }

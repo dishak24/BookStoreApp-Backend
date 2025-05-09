@@ -55,5 +55,11 @@ namespace ManagerLayer.Services
         {
             return await bookRepo.GetBooksByPriceDescAsync();
         }
+
+        //search books by book name, author name , or recently added books
+        public async Task<IEnumerable<BookResponseModel>> SearchBooksAsync(string keyword)
+        {
+            return await bookRepo.SearchBooksAsync(keyword);
+        }
     }
 }
