@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +43,8 @@ namespace BookStoreApp
 
             //for configure database connection
             services.AddDbContext<BookDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
+            services.AddDbContext<BooksContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
+
 
             //for user
             services.AddTransient<IUserRepo, UserRepo>();
@@ -54,6 +58,10 @@ namespace BookStoreApp
             //for user
             services.AddTransient<IAdminRepo, AdminRepo>();
             services.AddTransient<IAdminManager, AdminManager>();
+
+            //for books
+            services.AddTransient<IBooksManager, BooksManager>();
+            services.AddTransient<IBooksRepo, BooksRepo>();
 
 
             //For swagger
@@ -76,21 +84,7 @@ namespace BookStoreApp
                     In = ParameterLocation.Header,
                     Description = "Enter you valid Token",
                 });
-                //c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //                        {
-                //                            {
-                //                                new OpenApiSecurityScheme
-                //                                {
-                //                                    Reference = new OpenApiReference
-                //                                    {
-                //                                        Type = ReferenceType.SecurityScheme,
-                //                                            Id = "Bearer"
-                //                                    }
-                //                                },
-                //                                new string[] {}
-                //                            }
-                //                         });
-
+                
                 c.OperationFilter<AuthorizeOptionFilter>();
 
             });
@@ -115,6 +109,44 @@ namespace BookStoreApp
                     ValidAudience = Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
+
+                // to handle missing/invalid token globally
+                o.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse(); // Prevent default 401 response
+
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        var result = System.Text.Json.JsonSerializer.Serialize(new
+                        {
+                            success = false,
+                            message = "Authorization token is missing or invalid! Please login to access this resource."
+                        });
+
+                        return context.Response.WriteAsync(result);
+                    },
+
+                    // 403 - Forbidden (valid token, but not Admin)
+                    OnForbidden = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        context.Response.ContentType = "application/json";
+
+                        var result = JsonSerializer.Serialize(new ResponseModel<string>
+                        {
+                            Success = false,
+                            Message = "Access denied! You do not have the authorization to perform this action.",
+                            Data = null
+                        });
+
+                        return context.Response.WriteAsync(result);
+                    }
+                };
+
+
             });
 
             
@@ -140,7 +172,7 @@ namespace BookStoreApp
             //This middleware serves the Swagger documentation UI
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Employee API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Stores API V1");
             });
 
 
