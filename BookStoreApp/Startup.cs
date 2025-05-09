@@ -149,8 +149,9 @@ namespace BookStoreApp
 
             });
 
-            
-
+            //for injecting IHttpContextAccessor
+            //used to access the current HTTP context (request info, headers, user claims, etc.) 
+            services.AddHttpContextAccessor();
 
         }
 
