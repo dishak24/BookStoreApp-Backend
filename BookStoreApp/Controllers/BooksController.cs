@@ -188,5 +188,46 @@ namespace BookStoreApp.Controllers
            
         }
 
+        // sort by price: Ascending
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("sort")]
+        public async Task<IActionResult> GetBooksByPriceAscAsync()
+        {
+            try
+            {
+                var books = await booksManager.GetBooksByPriceAscAsync();
+                if (books != null)
+                {
+                    return Ok(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = true,
+                        Message = "Sorted books in ascending order.",
+                        Data = books
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = false,
+                        Message = "Failed to Sort !!",
+                        Data = books
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+           
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using RepositoryLayer.Interfaces;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,6 +69,24 @@ namespace RepositoryLayer.Services
             return true;
         }
 
+        // sort books by price in ascending order 
+        public async Task<IEnumerable<BookResponseModel>> GetBooksByPriceAscAsync()
+        {
+            return await context.Books
+               .OrderBy(b => b.Price)
+               .Select(b => new BookResponseModel
+               {
+                   BookName = b.BookName,
+                   Author = b.Author,
+                   Description = b.Description,
+                   Price = b.Price,
+                   DiscountPrice = b.DiscountPrice,
+                   Quantity = b.Quantity,
+                   BookImage = b.BookImage
+               })
+               .ToListAsync();
+        }
 
+        
     }
 }

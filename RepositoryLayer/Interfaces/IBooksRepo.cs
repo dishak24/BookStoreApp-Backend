@@ -20,5 +20,8 @@ namespace RepositoryLayer.Interfaces
 
         //delete book
         public Task<bool> DeleteBookAsync(int id);
+
+        // sort books by price in ascending order 
+        public Task<IEnumerable<BookResponseModel>> GetBooksByPriceAscAsync();
     }
 }

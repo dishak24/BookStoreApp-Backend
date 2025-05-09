@@ -43,5 +43,11 @@ namespace ManagerLayer.Services
         {
             return await bookRepo.DeleteBookAsync(id);
         }
+
+        // sort books by price in ascending order 
+        public async Task<IEnumerable<BookResponseModel>> GetBooksByPriceAscAsync()
+        {
+            return await bookRepo.GetBooksByPriceAscAsync();
+        }
     }
 }
