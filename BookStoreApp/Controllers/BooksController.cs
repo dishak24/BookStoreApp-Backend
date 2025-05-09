@@ -35,7 +35,7 @@ namespace BookStoreApp.Controllers
                 var books = await booksManager.GetAllBooksAsync();
                 if (books != null)
                 {
-                    return Ok(new ResponseModel<IEnumerable<Books>>
+                    return Ok(new ResponseModel<IEnumerable<BookResponseModel>>
                     {
                         Success = true,
                         Message = "Got All Books Successfully",
@@ -44,7 +44,7 @@ namespace BookStoreApp.Controllers
                 }
                 else
                 {
-                    return BadRequest(new ResponseModel<IEnumerable<Books>>
+                    return BadRequest(new ResponseModel<IEnumerable<BookResponseModel>>
                     {
                         Success = false,
                         Message = "Failed to Get All Books !!",
@@ -76,7 +76,7 @@ namespace BookStoreApp.Controllers
                 var book = await booksManager.GetBookByIdAsync(id);
                 if (book == null)
                 {
-                    return NotFound(new ResponseModel<Books>
+                    return NotFound(new ResponseModel<BookResponseModel>
                     {
                         Success = false,
                         Message = "Book Id not found !!!",
@@ -85,7 +85,7 @@ namespace BookStoreApp.Controllers
                 }
                 else
                 {
-                    return Ok(new ResponseModel<Books>
+                    return Ok(new ResponseModel<BookResponseModel>
                     {
                         Success = true,
                         Message = "Got Book details Successfully",

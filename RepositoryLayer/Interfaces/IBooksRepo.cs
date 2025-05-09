@@ -10,10 +10,10 @@ namespace RepositoryLayer.Interfaces
     public interface IBooksRepo
     {
         //to get all books
-        Task<IEnumerable<Books>> GetAllBooksAsync();
+        Task<IEnumerable<BookResponseModel>> GetAllBooksAsync();
 
         //get book by id
-        public Task<Books> GetBookByIdAsync(int id);
+        public Task<BookResponseModel> GetBookByIdAsync(int id);
 
         //update book
         public Task<bool> UpdateBookAsync(int id, BookModel book);
