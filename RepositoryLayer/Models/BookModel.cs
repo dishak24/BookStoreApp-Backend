@@ -13,9 +13,10 @@ namespace RepositoryLayer.Models
         public int DiscountPrice { get; set; }
         public int Quantity { get; set; }
         public string BookImage { get; set; }
-        public int AdminId { get; set; }
 
-     // public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        //public int AdminId { get; set; }
+
+        // public DateTime CreatedAt { get; set; }
+        //public DateTime UpdatedAt { get; set; }
     }
 }
