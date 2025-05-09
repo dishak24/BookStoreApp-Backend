@@ -87,6 +87,24 @@ namespace RepositoryLayer.Services
                .ToListAsync();
         }
 
-        
+        // sort books by price in descending order 
+        public async Task<IEnumerable<BookResponseModel>> GetBooksByPriceDescAsync()
+        {
+            return await context.Books
+               .OrderByDescending(b => b.Price)
+               .Select(b => new BookResponseModel
+               {
+                   BookName = b.BookName,
+                   Author = b.Author,
+                   Description = b.Description,
+                   Price = b.Price,
+                   DiscountPrice = b.DiscountPrice,
+                   Quantity = b.Quantity,
+                   BookImage = b.BookImage
+               })
+               .ToListAsync();
+        }
+
+
     }
 }

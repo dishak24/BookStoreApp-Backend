@@ -49,5 +49,11 @@ namespace ManagerLayer.Services
         {
             return await bookRepo.GetBooksByPriceAscAsync();
         }
+
+        // sort books by price in descending order 
+        public async Task<IEnumerable<BookResponseModel>> GetBooksByPriceDescAsync()
+        {
+            return await bookRepo.GetBooksByPriceDescAsync();
+        }
     }
 }
