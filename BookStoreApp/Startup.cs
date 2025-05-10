@@ -43,7 +43,7 @@ namespace BookStoreApp
 
             //for configure database connection
             services.AddDbContext<BookDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
-            services.AddDbContext<BooksContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
+            //services.AddDbContext<BooksContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
 
 
             //for user

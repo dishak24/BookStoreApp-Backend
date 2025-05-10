@@ -15,11 +15,11 @@ namespace RepositoryLayer.Services
     public class BooksRepo : IBooksRepo
     {
         //dependency
-        private readonly BooksContext context;
+        private readonly BookDBContext context;
 
         //access the current HTTP context (request info, headers, user claims, etc.) 
         private readonly IHttpContextAccessor httpContextAccessor;
-        public BooksRepo(BooksContext context, IHttpContextAccessor httpContextAccessor)
+        public BooksRepo(BookDBContext context, IHttpContextAccessor httpContextAccessor)
         {
             this.context = context;
             this.httpContextAccessor = httpContextAccessor;
