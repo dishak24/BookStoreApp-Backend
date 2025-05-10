@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,6 +20,8 @@ namespace RepositoryLayer.Context
 
         public DbSet<Books> Books { get; set; }
 
+        public DbSet<CartEntity> Carts { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +35,12 @@ namespace RepositoryLayer.Context
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
+
+            modelBuilder.Entity<CartEntity>()
+                                    .HasOne(c => c.Books)
+                                    .WithMany(b => b.Carts)
+                                    .HasForeignKey(c => c.BookId)
+                                    .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }
