@@ -66,6 +66,7 @@ namespace BookStoreApp.Controllers
             
         }
 
+        //get all cart items
         [Authorize(Roles = "User")]
         [HttpGet]
         public async Task<IActionResult> GetCart()
@@ -110,6 +111,48 @@ namespace BookStoreApp.Controllers
             }
             
         }
+
+        //remove item from cart
+        [Authorize(Roles = "User")]
+        [HttpDelete("{cartId}")]
+        public async Task<IActionResult> RemoveCartItem(int cartId)
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirst("UserId").Value);
+
+                var result = await manager.RemoveCartItemAsync(cartId, userId);
+
+                if (!result)
+                {
+                    return NotFound(new
+                    {
+                        Success = false,
+                        Message = "Cart item not found !!!",
+                        Data = (object)null
+                    });
+                }
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Cart item removed successfully.",
+                    Data = new { CartId = cartId }
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+
+        }
+
 
     }
 }

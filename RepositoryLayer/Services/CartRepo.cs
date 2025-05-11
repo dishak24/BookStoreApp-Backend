@@ -100,6 +100,21 @@ namespace RepositoryLayer.Services
                 .ToListAsync();
         }
 
+        //remove item from cart
+        public async Task<bool> RemoveCartItemAsync(int cartId, int userId)
+        {
+            var cartItem = await context.Carts
+                .FirstOrDefaultAsync(c => c.CartId == cartId && c.UserId == userId);
+
+            if (cartItem == null)
+            {
+                return false;
+            }                
+
+            context.Carts.Remove(cartItem);
+            await context.SaveChangesAsync();
+            return true;
+        }
 
 
     }

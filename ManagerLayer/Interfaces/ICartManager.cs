@@ -14,5 +14,9 @@ namespace ManagerLayer.Interfaces
 
         //get all cart items
         public Task<List<CartResponseModel>> GetCartAsync(int userId);
+
+        //remove item from cart
+        public Task<bool> RemoveCartItemAsync(int cartId, int userId);
     }
+
 }
