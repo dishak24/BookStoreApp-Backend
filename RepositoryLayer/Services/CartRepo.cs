@@ -41,7 +41,7 @@ namespace RepositoryLayer.Services
             if (existingCartItem != null)
             {
                 // Update the quantity if the book is already in the cart
-                existingCartItem.Quantity += quantity;
+                existingCartItem.Quantity += quantity; // quantity = 1 from controller
             }
             else
             {

@@ -27,12 +27,13 @@ namespace BookStoreApp.Controllers
         // Add a book to the cart
         [Authorize(Roles = "User")]
         [HttpPost]        
-        public async Task<IActionResult> AddBookToCart(int bookId, int quantity)
+        public async Task<IActionResult> AddBookToCart(int bookId)
         {
             try
             {
                 // Extract the UserId from the token claims
                 int userId = int.Parse(User.FindFirst("UserId").Value);
+                int quantity = 1;
 
                 var cart = await manager.AddBookToCartAsync(userId, bookId, quantity);
                 if (cart == null)
