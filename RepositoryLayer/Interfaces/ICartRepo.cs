@@ -12,6 +12,7 @@ namespace RepositoryLayer.Interfaces
         //add book to cart
         public Task<CartResponseModel> AddBookToCartAsync(int userId, int bookId, int quantity);
 
-
+        //get all cart items
+        public Task<List<CartResponseModel>> GetCartAsync(int userId);
     }
 }

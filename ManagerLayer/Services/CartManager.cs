@@ -26,5 +26,11 @@ namespace ManagerLayer.Services
             return await cartRepo.AddBookToCartAsync(userId, bookId, quantity);
         }
 
+        //get all cart items
+        public async Task<List<CartResponseModel>> GetCartAsync(int userId)
+        {
+            return await cartRepo.GetCartAsync(userId);
+        }
+
     }
 }

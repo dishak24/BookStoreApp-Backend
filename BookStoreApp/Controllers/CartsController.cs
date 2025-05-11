@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Migrations;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,8 @@ namespace BookStoreApp.Controllers
         }
 
         // Add a book to the cart
-        [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "User")]
+        [HttpPost]        
         public async Task<IActionResult> AddBookToCart(int bookId, int quantity)
         {
             try
@@ -38,7 +39,7 @@ namespace BookStoreApp.Controllers
                 {
                     return NotFound(new ResponseModel<CartResponseModel>
                     {
-                        Success = true,
+                        Success = false,
                         Message = "Book not found !!!",
                         Data = cart
                     });
@@ -64,5 +65,51 @@ namespace BookStoreApp.Controllers
             }
             
         }
+
+        [Authorize(Roles = "User")]
+        [HttpGet]
+        public async Task<IActionResult> GetCart()
+        {
+            try
+            {
+                // Extract UserId from JWT token
+                int userId = int.Parse(User.FindFirst("UserId").Value);
+
+                // Get the cart items for the current user
+                var result = await manager.GetCartAsync(userId);
+
+                if (result == null)
+                {
+                    return NotFound(new ResponseModel<List<CartResponseModel>>
+                    {
+                        Success = false,
+                        Message = "Cart items not found !!!",
+                        Data = result
+                    });
+                }
+                else
+                {
+                    return Ok(new ResponseModel<List<CartResponseModel>>
+                    {
+                        Success = true,
+                        Message = "Successfully getting cart items.",
+                        Data = result
+                    });
+                }
+                    
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+            
+        }
+
     }
 }

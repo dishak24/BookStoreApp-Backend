@@ -6,6 +6,7 @@ using RepositoryLayer.Interfaces;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -70,12 +71,33 @@ namespace RepositoryLayer.Services
                 CartId = cartItem.CartId,
                 BookId = cartItem.BookId,
                 BookName = cartItem.Books?.BookName,
+                Author = cartItem.Books.Author,
                 Quantity = cartItem.Quantity,
                 UnitPrice = (int)cartItem.UnitPrice,
                 BookImage = cartItem.Books?.BookImage
             };
 
             return responseModel;
+        }
+
+
+        //get all cart items
+        public async Task<List<CartResponseModel>> GetCartAsync(int userId)
+        {
+            return await context.Carts
+                .Where(c => c.UserId == userId)
+                .Include(c => c.Books)  // to include related Books data
+                .Select(c => new CartResponseModel
+                {
+                    CartId = c.CartId,
+                    BookId = c.BookId,
+                    BookName = c.Books.BookName,
+                    Author = c.Books.Author,
+                    Quantity = c.Quantity,
+                    UnitPrice = c.UnitPrice,
+                    BookImage = c.Books.BookImage
+                })
+                .ToListAsync();
         }
 
 
