@@ -1,0 +1,84 @@
+﻿using Microsoft.EntityFrameworkCore;
+using RepositoryLayer.Context;
+using RepositoryLayer.Entity;
+using RepositoryLayer.Helpers;
+using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RepositoryLayer.Services
+{
+    public class CartRepo : ICartRepo
+    {
+        //dependencies
+        private readonly BookDBContext context;
+        private readonly JwtTokenManager tokenManager;
+
+        public CartRepo(BookDBContext context, JwtTokenManager tokenManager)
+        {
+            this.context = context;
+            this.tokenManager = tokenManager;
+        }
+
+        //add book to cart
+        public async Task<CartResponseModel> AddBookToCartAsync(int userId, int bookId, int quantity)
+        {
+            // Get the book entity
+            var book = await context.Books.FindAsync(bookId);
+            if (book == null)
+            {
+                return null;
+            }
+
+            // Check if the book is already in the cart
+            var existingCartItem = await context.Carts
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.BookId == bookId);
+
+            if (existingCartItem != null)
+            {
+                // Update the quantity if the book is already in the cart
+                existingCartItem.Quantity += quantity;
+            }
+            else
+            {
+                // Add the new book to the cart
+                var newCartItem = new CartEntity
+                {
+                    UserId = userId,
+                    BookId = bookId,
+                    Quantity = quantity,
+                    UnitPrice = book.DiscountPrice,
+                    AddedAt = DateTime.Now
+                };
+                await context.Carts.AddAsync(newCartItem);
+            }
+
+            // Save changes
+            await context.SaveChangesAsync();
+
+            // Fetch the updated cart item with book details
+            var cartItem = await context.Carts
+                .Include(c => c.Books)
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.BookId == bookId);
+
+            // Convert to CartResponseModel
+            var responseModel = new CartResponseModel
+            {
+                CartId = cartItem.CartId,
+                BookId = cartItem.BookId,
+                BookName = cartItem.Books?.BookName,
+                Quantity = cartItem.Quantity,
+                UnitPrice = (int)cartItem.UnitPrice,
+                BookImage = cartItem.Books?.BookImage
+            };
+
+            return responseModel;
+        }
+
+
+
+    }
+}
