@@ -9,6 +9,7 @@ namespace RepositoryLayer.Models
         public int CartId { get; set; }
         public int BookId { get; set; }
         public string BookName { get; set; }
+        public string Author { get; set; }
         public int Quantity { get; set; }
         public int UnitPrice { get; set; }
         public int TotalPrice => UnitPrice * Quantity;
