@@ -38,5 +38,11 @@ namespace ManagerLayer.Services
             return await cartRepo.RemoveCartItemAsync(cartId, userId);
         }
 
+        //update quantity of item from cart
+        public async Task<CartResponseModel> UpdateCartQuantityAsync(int cartId, int userId, int quantity)
+        {
+            return await cartRepo.UpdateCartQuantityAsync(cartId, userId, quantity);
+        }
+
     }
 }

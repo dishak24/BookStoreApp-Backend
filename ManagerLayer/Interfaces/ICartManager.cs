@@ -17,6 +17,9 @@ namespace ManagerLayer.Interfaces
 
         //remove item from cart
         public Task<bool> RemoveCartItemAsync(int cartId, int userId);
+
+        //update quantity of item from cart
+        public Task<CartResponseModel> UpdateCartQuantityAsync(int cartId, int userId, int quantity);
     }
 
 }

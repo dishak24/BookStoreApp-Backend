@@ -116,6 +116,32 @@ namespace RepositoryLayer.Services
             return true;
         }
 
+        //update quantity of item from cart
+        public async Task<CartResponseModel> UpdateCartQuantityAsync(int cartId, int userId, int quantity)
+        {
+            var cartItem = await context.Carts
+                .Include(c => c.Books)
+                .FirstOrDefaultAsync(c => c.CartId == cartId && c.UserId == userId);
+
+            if (cartItem == null)
+                return null;
+
+            cartItem.Quantity = quantity;
+            cartItem.UnitPrice = cartItem.UnitPrice; // just for clarity
+            await context.SaveChangesAsync();
+
+            return new CartResponseModel
+            {
+                CartId = cartItem.CartId,
+                BookId = cartItem.BookId,
+                BookName = cartItem.Books.BookName,
+                Author = cartItem.Books.Author,
+                Quantity = cartItem.Quantity,
+                UnitPrice = cartItem.UnitPrice,
+                BookImage = cartItem.Books.BookImage
+            };
+        }
+
 
     }
 }

@@ -104,7 +104,7 @@ namespace BookStoreApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
-                    Message = "An internal error occurred. Please try again later.",
+                    Message = "An internal error occurred. Please try again later !!",
                     Data = e.Message
                 });
 
@@ -145,11 +145,63 @@ namespace BookStoreApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
-                    Message = "An internal error occurred. Please try again later.",
+                    Message = "An internal error occurred. Please try again later !!",
                     Data = e.Message
                 });
 
             }
+
+        }
+
+        //update quantity of item from cart
+        [Authorize(Roles = "User")]
+        [HttpPut("{cartId}")]
+        public async Task<IActionResult> UpdateCartQuantity(int cartId, [FromBody] UpdateQuantityModel model)
+        {
+            try
+            {
+                if (model.Quantity <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Quantity must be greater than 0",
+                        Data = (object)null
+                    });
+                }
+
+                int userId = int.Parse(User.FindFirst("UserId").Value);
+
+                var result = await manager.UpdateCartQuantityAsync(cartId, userId, model.Quantity);
+
+                if (result == null)
+                {
+                    return NotFound(new
+                    {
+                        Success = false,
+                        Message = "Cart item not found !!!",
+                        Data = (object)null
+                    });
+                }
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Cart quantity updated successfully",
+                    Data = result
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later !!",
+                    Data = e.Message
+                });
+
+            }
+
 
         }
 
