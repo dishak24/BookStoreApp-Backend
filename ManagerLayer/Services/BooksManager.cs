@@ -20,13 +20,13 @@ namespace ManagerLayer.Services
         }
 
         //to get all books
-        public async Task<IEnumerable<Books>> GetAllBooksAsync()
+        public async Task<IEnumerable<BookResponseModel>> GetAllBooksAsync()
         {
             return await bookRepo.GetAllBooksAsync();
         }
 
         //to get book by id
-        public async Task<Books> GetBookByIdAsync(int id)
+        public async Task<BookResponseModel> GetBookByIdAsync(int id)
         {
             return await bookRepo.GetBookByIdAsync(id);
         }
@@ -42,6 +42,24 @@ namespace ManagerLayer.Services
         public async Task<bool> DeleteBookAsync(int id)
         {
             return await bookRepo.DeleteBookAsync(id);
+        }
+
+        // sort books by price in ascending order 
+        public async Task<IEnumerable<BookResponseModel>> GetBooksByPriceAscAsync()
+        {
+            return await bookRepo.GetBooksByPriceAscAsync();
+        }
+
+        // sort books by price in descending order 
+        public async Task<IEnumerable<BookResponseModel>> GetBooksByPriceDescAsync()
+        {
+            return await bookRepo.GetBooksByPriceDescAsync();
+        }
+
+        //search books by book name, author name , or recently added books
+        public async Task<IEnumerable<BookResponseModel>> SearchBooksAsync(string keyword)
+        {
+            return await bookRepo.SearchBooksAsync(keyword);
         }
     }
 }

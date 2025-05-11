@@ -35,7 +35,7 @@ namespace BookStoreApp.Controllers
                 var books = await booksManager.GetAllBooksAsync();
                 if (books != null)
                 {
-                    return Ok(new ResponseModel<IEnumerable<Books>>
+                    return Ok(new ResponseModel<IEnumerable<BookResponseModel>>
                     {
                         Success = true,
                         Message = "Got All Books Successfully",
@@ -44,7 +44,7 @@ namespace BookStoreApp.Controllers
                 }
                 else
                 {
-                    return BadRequest(new ResponseModel<IEnumerable<Books>>
+                    return BadRequest(new ResponseModel<IEnumerable<BookResponseModel>>
                     {
                         Success = false,
                         Message = "Failed to Get All Books !!",
@@ -76,7 +76,7 @@ namespace BookStoreApp.Controllers
                 var book = await booksManager.GetBookByIdAsync(id);
                 if (book == null)
                 {
-                    return NotFound(new ResponseModel<Books>
+                    return NotFound(new ResponseModel<BookResponseModel>
                     {
                         Success = false,
                         Message = "Book Id not found !!!",
@@ -85,7 +85,7 @@ namespace BookStoreApp.Controllers
                 }
                 else
                 {
-                    return Ok(new ResponseModel<Books>
+                    return Ok(new ResponseModel<BookResponseModel>
                     {
                         Success = true,
                         Message = "Got Book details Successfully",
@@ -186,6 +186,134 @@ namespace BookStoreApp.Controllers
 
             }
            
+        }
+
+        // sort by price: Ascending
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("sort")]
+        public async Task<IActionResult> GetBooksByPriceAscAsync()
+        {
+            try
+            {
+                var books = await booksManager.GetBooksByPriceAscAsync();
+                if (books != null)
+                {
+                    return Ok(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = true,
+                        Message = "Sorted books in ascending order.",
+                        Data = books
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = false,
+                        Message = "Failed to Sort !!",
+                        Data = books
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+           
+        }
+
+        // sort by price: Descending
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("sort/desc")]
+        public async Task<IActionResult> GetBooksByPriceDescAsync()
+        {
+            try
+            {
+                var books = await booksManager.GetBooksByPriceDescAsync();
+                if (books != null)
+                {
+                    return Ok(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = true,
+                        Message = "Sorted books in Descending order.",
+                        Data = books
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = false,
+                        Message = "Failed to Sort !!",
+                        Data = books
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+
+        }
+
+        // search books
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("search")]        
+        public async Task<IActionResult> SearchBooksAsync([FromQuery] string keyword)
+        {
+            try
+            {
+                var books = await booksManager.SearchBooksAsync(keyword);
+                if (string.IsNullOrWhiteSpace(keyword))
+                {
+                    return BadRequest("Keyword cannot be empty !!");
+                }
+                   
+                if (books != null)
+                {
+                    return Ok(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = true,
+                        Message = "successfully getting searched books.",
+                        Data = books
+                    });
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<IEnumerable<BookResponseModel>>
+                    {
+                        Success = false,
+                        Message = "Failed to search !!",
+                        Data = books
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+
         }
 
     }

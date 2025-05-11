@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
@@ -43,7 +44,7 @@ namespace BookStoreApp
 
             //for configure database connection
             services.AddDbContext<BookDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
-            services.AddDbContext<BooksContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
+            //services.AddDbContext<BooksContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
 
 
             //for user
@@ -62,6 +63,10 @@ namespace BookStoreApp
             //for books
             services.AddTransient<IBooksManager, BooksManager>();
             services.AddTransient<IBooksRepo, BooksRepo>();
+
+            //for carts
+            services.AddTransient<ICartManager, CartManager>();
+            services.AddTransient<ICartRepo, CartRepo>();
 
 
             //For swagger
@@ -149,8 +154,18 @@ namespace BookStoreApp
 
             });
 
-            
+            //This tells ASP.NET Core to use Newtonsoft.Json
+            //instead of the default System.Text.Json for JSON serialization/deserialization.
+            // to avoids infinite loops during serialization
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
 
+
+            //for injecting IHttpContextAccessor
+            //used to access the current HTTP context (request info, headers, user claims, etc.) 
+            services.AddHttpContextAccessor();
 
         }
 

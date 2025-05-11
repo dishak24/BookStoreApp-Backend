@@ -89,7 +89,7 @@ namespace RepositoryLayer.Services
             return new LoginResponseModel
             {
                 Name = user.FullName,
-                //Email = user.Email,
+                Email = user.Email,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
                

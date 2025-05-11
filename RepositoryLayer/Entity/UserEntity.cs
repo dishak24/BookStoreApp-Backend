@@ -21,5 +21,8 @@ namespace RepositoryLayer.Entity
         // for refresh token
         public string RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+
+        // for cart 
+        public virtual ICollection<CartEntity> Carts { get; set; }
     }
 }
