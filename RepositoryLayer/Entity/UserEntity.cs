@@ -27,5 +27,9 @@ namespace RepositoryLayer.Entity
 
         //for wishlist
         public virtual ICollection<WishlistEntity> Wishlists { get; set; }
+
+        //for orders
+        public virtual ICollection<OrderSummaryEntity> Orders { get; set; }
+
     }
 }
