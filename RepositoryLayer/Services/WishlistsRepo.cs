@@ -86,6 +86,20 @@ namespace RepositoryLayer.Services
                 .ToListAsync();
         }
 
+        //remove book from wishlist
+        public async Task<bool> RemoveFromWishlistAsync(int userId, int bookId)
+        {
+            var item = await context.Wishlists.FirstOrDefaultAsync(w => w.UserId == userId && w.BookId == bookId);
+            if (item == null)
+            {
+                return false;
+            }
+
+            context.Wishlists.Remove(item);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
 
     }
 }

@@ -29,5 +29,11 @@ namespace ManagerLayer.Services
         {
             return await wishlists.GetWishlistAsync(userId);
         }
+
+        //remove book from wishlist
+        public async Task<bool> RemoveFromWishlistAsync(int userId, int bookId)
+        {
+            return await wishlists.RemoveFromWishlistAsync(userId, bookId);
+        }
     }
 }

@@ -13,5 +13,9 @@ namespace ManagerLayer.Interfaces
 
         //get all wishlists
         public Task<List<WishlistResponseModel>> GetWishlistAsync(int userId);
+
+        //remove book from wishlist
+        public Task<bool> RemoveFromWishlistAsync(int userId, int bookId);
     }
+
 }

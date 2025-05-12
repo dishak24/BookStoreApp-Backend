@@ -108,6 +108,47 @@ namespace BookStoreApp.Controllers
             
         }
 
+        //remove book from wishlist
+        [Authorize(Roles = "User")]
+        [HttpDelete("{bookId}")]
+        public async Task<IActionResult> RemoveFromWishlist(int bookId)
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirst("UserId").Value);
+                var removed = await manager.RemoveFromWishlistAsync(userId, bookId);
+
+                if (!removed)
+                {
+                    return NotFound(new ResponseModel<string>
+                    { 
+                        Success = false, 
+                        Message = "Book not found in wishlist !!", 
+                        Data = null 
+                    });
+                }
+                    
+
+                return Ok(new ResponseModel<string>
+                { 
+                    Success = true, 
+                    Message = "Book removed from wishlist.", 
+                    Data = null 
+                });
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later !!",
+                    Data = e.Message
+                });
+
+            }
+        }
+
     }
 }
 
