@@ -168,6 +168,31 @@ namespace RepositoryLayer.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("RepositoryLayer.Entity.WishlistEntity", b =>
+                {
+                    b.Property<int>("WishlistId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("WishlistId");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Wishlists");
+                });
+
             modelBuilder.Entity("RepositoryLayer.Entity.CartEntity", b =>
                 {
                     b.HasOne("RepositoryLayer.Entity.Books", "Books")
@@ -178,6 +203,21 @@ namespace RepositoryLayer.Migrations
 
                     b.HasOne("RepositoryLayer.Entity.UserEntity", "Users")
                         .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RepositoryLayer.Entity.WishlistEntity", b =>
+                {
+                    b.HasOne("RepositoryLayer.Entity.Books", "Book")
+                        .WithMany("Wishlists")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", "User")
+                        .WithMany("Wishlists")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
