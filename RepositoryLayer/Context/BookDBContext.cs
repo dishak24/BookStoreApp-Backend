@@ -69,14 +69,14 @@ namespace RepositoryLayer.Context
 
             // When a Book is deleted, related OrderSummary entries are deleted
             modelBuilder.Entity<OrderSummaryEntity>()
-                .HasOne(o => o.Book)
+                .HasOne(o => o.Books)
                 .WithMany()
                 .HasForeignKey(o => o.BookId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // (Optional) Cascade delete when user is deleted
             modelBuilder.Entity<OrderSummaryEntity>()
-                .HasOne(o => o.User)
+                .HasOne(o => o.Users)
                 .WithMany()
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
