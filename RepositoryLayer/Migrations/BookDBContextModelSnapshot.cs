@@ -251,7 +251,7 @@ namespace RepositoryLayer.Migrations
 
             modelBuilder.Entity("RepositoryLayer.Entity.OrderSummaryEntity", b =>
                 {
-                    b.HasOne("RepositoryLayer.Entity.Books", "Book")
+                    b.HasOne("RepositoryLayer.Entity.Books", "Books")
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -265,7 +265,7 @@ namespace RepositoryLayer.Migrations
                         .WithMany("Orders")
                         .HasForeignKey("UserEntityUserId");
 
-                    b.HasOne("RepositoryLayer.Entity.UserEntity", "User")
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", "Users")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
