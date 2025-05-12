@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookStoreApp.Controllers
@@ -67,5 +68,46 @@ namespace BookStoreApp.Controllers
 
         }
 
+        //get all wishlists
+        [Authorize(Roles = "User")]
+        [HttpGet]
+        public async Task<IActionResult> GetWishlist()
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirst("UserId").Value);
+                var list = await manager.GetWishlistAsync(userId);
+
+                if (list.Count == 0)
+                {
+                    return Ok(new ResponseModel<string>
+                    {
+                        Success = true,
+                        Message = "Wishlist is Empty! Please add book to wishlist.",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ResponseModel<List<WishlistResponseModel>>
+                { 
+                    Success = true, 
+                    Message = "Getting Wishlist Successfully.", 
+                    Data = list 
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later !!",
+                    Data = e.Message
+                });
+
+            }
+            
+        }
+
     }
 }
+

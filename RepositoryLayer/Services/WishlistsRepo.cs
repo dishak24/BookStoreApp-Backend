@@ -6,6 +6,7 @@ using RepositoryLayer.Interfaces;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,6 +65,25 @@ namespace RepositoryLayer.Services
             };
 
             return ("Success", data);
+        }
+
+        //get all wishlists
+        public async Task<List<WishlistResponseModel>> GetWishlistAsync(int userId)
+        {
+            return await context.Wishlists
+                .Include(w => w.Book)
+                .Where(w => w.UserId == userId)
+                .Select(w => new WishlistResponseModel
+                {
+                    WishlistId = w.WishlistId,
+                    BookId = w.BookId,
+                    BookName = w.Book.BookName,
+                    Author = w.Book.Author,
+                    BookImage = w.Book.BookImage,
+                    Price = w.Book.Price,
+                    DiscountPrice = w.Book.DiscountPrice
+                })
+                .ToListAsync();
         }
 
 

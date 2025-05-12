@@ -10,5 +10,8 @@ namespace RepositoryLayer.Interfaces
     {
         //add book to wishlist
         public Task<(string Status, WishlistResponseModel Data)> AddToWishlistAsync(int userId, int bookId);
+
+        //get all wishlists
+        public Task<List<WishlistResponseModel>> GetWishlistAsync(int userId);
     }
 }

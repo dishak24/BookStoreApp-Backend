@@ -23,5 +23,11 @@ namespace ManagerLayer.Services
         {
             return await wishlists.AddToWishlistAsync(userId, bookId);
         }
+
+        //get all wishlists
+        public async Task<List<WishlistResponseModel>> GetWishlistAsync(int userId)
+        {
+            return await wishlists.GetWishlistAsync(userId);
+        }
     }
 }
