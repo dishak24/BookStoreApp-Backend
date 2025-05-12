@@ -28,6 +28,9 @@ namespace RepositoryLayer.Context
         public DbSet<WishlistEntity> Wishlists { get; set; }
 
 
+        //For create Wishlists table
+        public DbSet<OrderSummaryEntity> Orders { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,6 +65,20 @@ namespace RepositoryLayer.Context
                 .HasOne(w => w.User)
                 .WithMany(u => u.Wishlists)
                 .HasForeignKey(w => w.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // When a Book is deleted, related OrderSummary entries are deleted
+            modelBuilder.Entity<OrderSummaryEntity>()
+                .HasOne(o => o.Book)
+                .WithMany()
+                .HasForeignKey(o => o.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // (Optional) Cascade delete when user is deleted
+            modelBuilder.Entity<OrderSummaryEntity>()
+                .HasOne(o => o.User)
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
