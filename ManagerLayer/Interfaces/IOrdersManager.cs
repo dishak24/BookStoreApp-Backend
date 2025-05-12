@@ -1,4 +1,5 @@
 ﻿using RepositoryLayer.Entity;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,5 +11,8 @@ namespace ManagerLayer.Interfaces
     {
         //to place order
         public Task<List<OrderSummaryEntity>> PlaceOrderAsync(int userId);
+
+        //get all orders
+        public Task<List<OrderResponseModel>> GetUserOrdersAsync(int userId);
     }
 }

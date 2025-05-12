@@ -69,5 +69,48 @@ namespace BookStoreApp.Controllers
         }
 
 
+        //to get all orders
+        [Authorize(Roles = "User")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllOrders()
+        {
+
+            try
+            {
+                int userId = int.Parse(User.FindFirst("UserId").Value);
+                var orders = await manager.GetUserOrdersAsync(userId);
+
+                if (orders.Count == 0)
+                {
+                    return Ok(new ResponseModel<string>
+                    {
+                        Success = true,
+                        Message = "Order Summary is Empty! Please order books.",
+                        Data = null
+                    });
+                }
+
+                return Ok(new 
+                { 
+                    Success = true, 
+                    Message = "Orders retrieved successfully.", 
+                    Data = orders 
+                });
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An internal error occurred. Please try again later.",
+                    Data = e.Message
+                });
+
+            }
+           
+        }
+
+
     }
 }

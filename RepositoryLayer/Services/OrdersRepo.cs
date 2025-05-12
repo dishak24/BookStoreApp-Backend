@@ -3,7 +3,7 @@ using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helpers;
 using RepositoryLayer.Interfaces;
-using RepositoryLayer.Migrations;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,6 +72,25 @@ namespace RepositoryLayer.Services
         }
 
 
+        //get all orders
+        public async Task<List<OrderResponseModel>> GetUserOrdersAsync(int userId)
+        {
+            return await context.Orders
+                .Include(o => o.Books)
+                .Where(o => o.UserId == userId)
+                .Select(o => new OrderResponseModel
+                {
+                    OrderId = o.OrderId,
+                    BookId = o.BookId,
+                    BookName = o.Books.BookName,
+                    Author = o.Books.Author,
+                    Quantity = o.Quantity,
+                    TotalAmount = o.TotalAmount,
+                    BookImage = o.Books.BookImage,
+                    OrderedAt = o.OrderedAt
+                })
+                .ToListAsync();
+        }
 
 
     }

@@ -1,6 +1,7 @@
 ﻿using ManagerLayer.Interfaces;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interfaces;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,6 +23,12 @@ namespace ManagerLayer.Services
         public async Task<List<OrderSummaryEntity>> PlaceOrderAsync(int userId)
         {
             return await orderRepo.PlaceOrderAsync(userId);
+        }
+
+        //get all orders
+        public async Task<List<OrderResponseModel>> GetUserOrdersAsync(int userId)
+        {
+            return await orderRepo.GetUserOrdersAsync(userId);
         }
     }
 }
