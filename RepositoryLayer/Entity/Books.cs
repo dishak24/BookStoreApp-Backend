@@ -23,5 +23,9 @@ namespace RepositoryLayer.Entity
 
         // for cart
         public virtual ICollection<CartEntity> Carts { get; set; }
+
+        //for wishlist
+        public virtual ICollection<WishlistEntity> Wishlists { get; set; }
+
     }
 }
