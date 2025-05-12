@@ -12,19 +12,22 @@ namespace RepositoryLayer.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderId { get; set; }
 
-        [ForeignKey("User")]
         public int UserId { get; set; }
 
-        [ForeignKey("Book")]
         public int BookId { get; set; }
 
         public int Quantity { get; set; }
+
         public int TotalAmount { get; set; }
+
         public DateTime OrderedAt { get; set; } = DateTime.Now;
 
-        // Navigation properties
-        public virtual UserEntity User { get; set; }
-        public virtual Books Book { get; set; }
+        //Navigation properties
+        [ForeignKey("UserId")]
+        public virtual UserEntity Users { get; set; }
+
+        [ForeignKey("BookId")]
+        public virtual Books Books { get; set; }
     }
 
 }
