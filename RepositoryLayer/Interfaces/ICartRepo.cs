@@ -13,12 +13,12 @@ namespace RepositoryLayer.Interfaces
         public Task<CartResponseModel> AddBookToCartAsync(int userId, int bookId, int quantity);
 
         //get all cart items
-        public Task<List<CartResponseModel>> GetCartAsync(int userId);
+        public Task<CartListResponseModel> GetCartAsync(int userId);
 
         //remove item from cart
-        public Task<bool> RemoveCartItemAsync(int cartId, int userId);
+        public Task<bool> RemoveCartItemAsync(int bookId, int userId);
 
         //update quantity of item from cart
-        public Task<CartResponseModel> UpdateCartQuantityAsync(int cartId, int userId, int quantity);
+        public Task<CartResponseModel> UpdateCartQuantityAsync(int userId, int bookId, int quantity);
     }
 }

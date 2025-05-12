@@ -82,7 +82,7 @@ namespace BookStoreApp.Controllers
 
                 if (result == null)
                 {
-                    return NotFound(new ResponseModel<List<CartResponseModel>>
+                    return NotFound(new ResponseModel<CartListResponseModel>
                     {
                         Success = false,
                         Message = "Cart items not found !!!",
@@ -91,12 +91,25 @@ namespace BookStoreApp.Controllers
                 }
                 else
                 {
-                    return Ok(new ResponseModel<List<CartResponseModel>>
+                    if (result.Items.Count == 0)
                     {
-                        Success = true,
-                        Message = "Successfully getting cart items.",
-                        Data = result
-                    });
+                        return Ok(new ResponseModel<CartListResponseModel>
+                        {
+                            Success = true,
+                            Message = "Cart is Empty! Please add book to cart.",
+                            Data = null
+                        });
+                    }
+                    else
+                    {
+                        return Ok(new ResponseModel<CartListResponseModel>
+                        {
+                            Success = true,
+                            Message = "Successfully getting cart items.",
+                            Data = result
+                        });
+                    }
+                        
                 }
                     
             }
@@ -115,22 +128,22 @@ namespace BookStoreApp.Controllers
 
         //remove item from cart
         [Authorize(Roles = "User")]
-        [HttpDelete("{cartId}")]
-        public async Task<IActionResult> RemoveCartItem(int cartId)
+        [HttpDelete("{bookId}")]
+        public async Task<IActionResult> RemoveCartItem(int bookId)
         {
             try
             {
                 int userId = int.Parse(User.FindFirst("UserId").Value);
 
-                var result = await manager.RemoveCartItemAsync(cartId, userId);
+                var result = await manager.RemoveCartItemAsync(bookId, userId);
 
                 if (!result)
                 {
-                    return NotFound(new
+                    return NotFound(new ResponseModel<string>
                     {
                         Success = false,
                         Message = "Cart item not found !!!",
-                        Data = (object)null
+                        Data = null
                     });
                 }
 
@@ -138,7 +151,7 @@ namespace BookStoreApp.Controllers
                 {
                     Success = true,
                     Message = "Cart item removed successfully.",
-                    Data = new { CartId = cartId }
+                    Data = new { BookId = bookId }
                 });
             }
             catch (Exception e)
@@ -156,39 +169,52 @@ namespace BookStoreApp.Controllers
 
         //update quantity of item from cart
         [Authorize(Roles = "User")]
-        [HttpPut("{cartId}")]
-        public async Task<IActionResult> UpdateCartQuantity(int cartId, [FromBody] UpdateQuantityModel model)
+        [HttpPut("{bookId}")]
+        public async Task<IActionResult> UpdateCartQuantity(int bookId, [FromBody] UpdateQuantityModel model)
         {
             try
             {
-                if (model.Quantity <= 0)
+                int userId = int.Parse(User.FindFirst("UserId").Value);
+                if (model.Quantity == 0)
                 {
-                    return BadRequest(new
+                    var isRemoved = await manager.RemoveCartItemAsync(bookId, userId);
+
+                    if (!isRemoved)
                     {
-                        Success = false,
-                        Message = "Quantity must be greater than 0",
-                        Data = (object)null
+                        return NotFound(new ResponseModel<string>
+                        {
+                            Success = false,
+                            Message = "Book not found in cart!!",
+                            Data = null
+                        });
+                    }
+
+                    return Ok(new ResponseModel<string>
+                    {
+                        Success = true,
+                        Message = "Book removed from cart because quantity was set to 0.",
+                        Data = null
                     });
                 }
 
-                int userId = int.Parse(User.FindFirst("UserId").Value);
+                
 
-                var result = await manager.UpdateCartQuantityAsync(cartId, userId, model.Quantity);
+                var result = await manager.UpdateCartQuantityAsync(userId, bookId,  model.Quantity);
 
                 if (result == null)
                 {
-                    return NotFound(new
+                    return NotFound(new ResponseModel<string>
                     {
                         Success = false,
-                        Message = "Cart item not found !!!",
-                        Data = (object)null
+                        Message = "Book not found !!!",
+                        Data = null
                     });
                 }
 
                 return Ok(new
                 {
                     Success = true,
-                    Message = "Cart quantity updated successfully",
+                    Message = "Books quantity updated successfully",
                     Data = result
                 });
             }

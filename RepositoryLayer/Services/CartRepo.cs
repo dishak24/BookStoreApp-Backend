@@ -7,6 +7,7 @@ using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -74,7 +75,8 @@ namespace RepositoryLayer.Services
                 Author = cartItem.Books.Author,
                 Quantity = cartItem.Quantity,
                 UnitPrice = (int)cartItem.UnitPrice,
-                BookImage = cartItem.Books?.BookImage
+                BookImage = cartItem.Books?.BookImage,
+                IsPurchased = cartItem.IsPurchased
             };
 
             return responseModel;
@@ -82,11 +84,11 @@ namespace RepositoryLayer.Services
 
 
         //get all cart items
-        public async Task<List<CartResponseModel>> GetCartAsync(int userId)
+        public async Task<CartListResponseModel> GetCartAsync(int userId)
         {
-            return await context.Carts
-                .Where(c => c.UserId == userId)
-                .Include(c => c.Books)  // to include related Books data
+            var items = await context.Carts
+                .Where(c => c.UserId == userId && !c.IsPurchased)
+                .Include(c => c.Books)
                 .Select(c => new CartResponseModel
                 {
                     CartId = c.CartId,
@@ -95,16 +97,25 @@ namespace RepositoryLayer.Services
                     Author = c.Books.Author,
                     Quantity = c.Quantity,
                     UnitPrice = c.UnitPrice,
-                    BookImage = c.Books.BookImage
+                    BookImage = c.Books.BookImage,
+                    IsPurchased = c.IsPurchased
                 })
                 .ToListAsync();
+
+            return new CartListResponseModel
+            {
+                Items = items,
+                TotalAmount = items.Sum(x => x.UnitPrice * x.Quantity)
+            };
         }
 
+
         //remove item from cart
-        public async Task<bool> RemoveCartItemAsync(int cartId, int userId)
+        public async Task<bool> RemoveCartItemAsync(int bookId, int userId)
         {
             var cartItem = await context.Carts
-                .FirstOrDefaultAsync(c => c.CartId == cartId && c.UserId == userId);
+                .Include(c => c.Books)
+                .FirstOrDefaultAsync(c => c.BookId == bookId && c.UserId == userId);
 
             if (cartItem == null)
             {
@@ -117,17 +128,18 @@ namespace RepositoryLayer.Services
         }
 
         //update quantity of item from cart
-        public async Task<CartResponseModel> UpdateCartQuantityAsync(int cartId, int userId, int quantity)
+        public async Task<CartResponseModel> UpdateCartQuantityAsync(int userId, int bookId, int quantity)
         {
             var cartItem = await context.Carts
                 .Include(c => c.Books)
-                .FirstOrDefaultAsync(c => c.CartId == cartId && c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.BookId == bookId && c.UserId == userId); 
 
             if (cartItem == null)
                 return null;
 
             cartItem.Quantity = quantity;
-            cartItem.UnitPrice = cartItem.UnitPrice; // just for clarity
+
+            // Save the changes
             await context.SaveChangesAsync();
 
             return new CartResponseModel
@@ -138,9 +150,11 @@ namespace RepositoryLayer.Services
                 Author = cartItem.Books.Author,
                 Quantity = cartItem.Quantity,
                 UnitPrice = cartItem.UnitPrice,
-                BookImage = cartItem.Books.BookImage
+                BookImage = cartItem.Books.BookImage,
+                IsPurchased = cartItem.IsPurchased
             };
         }
+
 
 
     }

@@ -14,7 +14,8 @@ namespace RepositoryLayer.Models
         public int UnitPrice { get; set; }
         public int TotalPrice => UnitPrice * Quantity;
         public string BookImage { get; set; }
-        
+        public bool IsPurchased { get; set; }
+
 
     }
 }
