@@ -18,9 +18,16 @@ namespace RepositoryLayer.Context
         //For create Admin table
         public DbSet<AdminEntity> Admins { get; set; }
 
+        //For create Books table
         public DbSet<Books> Books { get; set; }
 
+        //For create carts table
         public DbSet<CartEntity> Carts { get; set; }
+
+        //For create Wishlists table
+        public DbSet<WishlistEntity> Wishlists { get; set; }
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,11 +43,27 @@ namespace RepositoryLayer.Context
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
+            // Cascade delete when Book is deleted
             modelBuilder.Entity<CartEntity>()
-                                    .HasOne(c => c.Books)
-                                    .WithMany(b => b.Carts)
-                                    .HasForeignKey(c => c.BookId)
-                                    .OnDelete(DeleteBehavior.Cascade);
+                 .HasOne(c => c.Books)
+                 .WithMany(b => b.Carts)
+                 .HasForeignKey(c => c.BookId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Cascade delete when Book is deleted
+            modelBuilder.Entity<WishlistEntity>()
+                .HasOne(w => w.Book)
+                .WithMany(b => b.Wishlists)
+                .HasForeignKey(w => w.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cascade delete when User is deleted
+            modelBuilder.Entity<WishlistEntity>()
+                .HasOne(w => w.User)
+                .WithMany(u => u.Wishlists)
+                .HasForeignKey(w => w.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             base.OnModelCreating(modelBuilder);
         }
