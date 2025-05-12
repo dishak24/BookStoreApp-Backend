@@ -135,6 +135,47 @@ namespace RepositoryLayer.Migrations
                     b.ToTable("Carts");
                 });
 
+            modelBuilder.Entity("RepositoryLayer.Entity.OrderSummaryEntity", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BooksBookId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OrderedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserEntityUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("BooksBookId");
+
+                    b.HasIndex("UserEntityUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("RepositoryLayer.Entity.UserEntity", b =>
                 {
                     b.Property<int>("UserId")
@@ -203,6 +244,29 @@ namespace RepositoryLayer.Migrations
 
                     b.HasOne("RepositoryLayer.Entity.UserEntity", "Users")
                         .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RepositoryLayer.Entity.OrderSummaryEntity", b =>
+                {
+                    b.HasOne("RepositoryLayer.Entity.Books", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RepositoryLayer.Entity.Books", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("BooksBookId");
+
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("UserEntityUserId");
+
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
