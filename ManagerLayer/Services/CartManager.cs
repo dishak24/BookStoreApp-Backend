@@ -27,21 +27,21 @@ namespace ManagerLayer.Services
         }
 
         //get all cart items
-        public async Task<List<CartResponseModel>> GetCartAsync(int userId)
+        public async Task<CartListResponseModel> GetCartAsync(int userId)
         {
             return await cartRepo.GetCartAsync(userId);
         }
 
         //remove item from cart
-        public async Task<bool> RemoveCartItemAsync(int cartId, int userId)
+        public async Task<bool> RemoveCartItemAsync(int bookId, int userId)
         {
-            return await cartRepo.RemoveCartItemAsync(cartId, userId);
+            return await cartRepo.RemoveCartItemAsync(bookId, userId);
         }
-
+        
         //update quantity of item from cart
-        public async Task<CartResponseModel> UpdateCartQuantityAsync(int cartId, int userId, int quantity)
+        public async Task<CartResponseModel> UpdateCartQuantityAsync(int userId, int bookId, int quantity)    
         {
-            return await cartRepo.UpdateCartQuantityAsync(cartId, userId, quantity);
+            return await cartRepo.UpdateCartQuantityAsync(userId, bookId, quantity);
         }
 
     }
