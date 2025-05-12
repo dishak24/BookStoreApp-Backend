@@ -68,6 +68,10 @@ namespace BookStoreApp
             services.AddTransient<ICartManager, CartManager>();
             services.AddTransient<ICartRepo, CartRepo>();
 
+            //for wishlist
+            services.AddTransient<IWishlistsManager, WishlistsManager>();
+            services.AddTransient<IWishlistsRepo, WishlistsRepo>();
+
 
             //For swagger
             //services.AddSwaggerGen();
