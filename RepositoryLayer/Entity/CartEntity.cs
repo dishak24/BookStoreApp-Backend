@@ -20,11 +20,11 @@ namespace RepositoryLayer.Entity
         public int Quantity { get; set; }
         public int UnitPrice { get; set; }  // Discount price 
         public DateTime AddedAt { get; set; } = DateTime.Now;
+        public bool IsPurchased { get; set; } = false;
 
         // Navigation properties
         public virtual UserEntity Users { get; set; }
         public virtual Books Books { get; set; }
 
     }
-
-    }
+}
