@@ -31,5 +31,9 @@ namespace RepositoryLayer.Entity
         //for orders
         public virtual ICollection<OrderSummaryEntity> Orders { get; set; }
 
+        //for customer details
+        public virtual ICollection<CustomerDetailsEntity> CustomerDetails { get; set; }
+
+
     }
 }
