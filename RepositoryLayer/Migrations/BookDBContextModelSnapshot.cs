@@ -135,6 +135,46 @@ namespace RepositoryLayer.Migrations
                     b.ToTable("Carts");
                 });
 
+            modelBuilder.Entity("RepositoryLayer.Entity.CustomerDetailsEntity", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Mobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserEntityUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CustomerId");
+
+                    b.HasIndex("UserEntityUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CustomerDetails");
+                });
+
             modelBuilder.Entity("RepositoryLayer.Entity.OrderSummaryEntity", b =>
                 {
                     b.Property<int>("OrderId")
@@ -244,6 +284,19 @@ namespace RepositoryLayer.Migrations
 
                     b.HasOne("RepositoryLayer.Entity.UserEntity", "Users")
                         .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RepositoryLayer.Entity.CustomerDetailsEntity", b =>
+                {
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", null)
+                        .WithMany("CustomerDetails")
+                        .HasForeignKey("UserEntityUserId");
+
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", "Users")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
