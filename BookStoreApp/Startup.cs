@@ -76,6 +76,10 @@ namespace BookStoreApp
             services.AddTransient<IOrdersManager, OrdersManager>();
             services.AddTransient<IOrdersRepo, OrdersRepo>();
 
+            //for customerDetails
+            services.AddTransient<ICustomerDetailsManager, CustomerDetailsManager>();
+            services.AddTransient<ICustomerDetailsRepo, CustomerDetailsRepo>();
+
 
             //For swagger
             //services.AddSwaggerGen();
