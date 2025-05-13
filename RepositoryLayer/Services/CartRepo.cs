@@ -32,7 +32,12 @@ namespace RepositoryLayer.Services
             var book = await context.Books.FindAsync(bookId);
             if (book == null)
             {
-                return null;
+                throw new InvalidOperationException("Book not found.");
+            }
+
+            if (book.Quantity <= 0)
+            {
+                throw new InvalidOperationException("Book is out of stock.");
             }
 
             // Check if the book is already in the cart
@@ -41,11 +46,23 @@ namespace RepositoryLayer.Services
 
             if (existingCartItem != null)
             {
-                // Update the quantity if the book is already in the cart
-                existingCartItem.Quantity += quantity; // quantity = 1 from controller
+                int totalRequestedQuantity = existingCartItem.Quantity + quantity;
+
+                if (totalRequestedQuantity > book.Quantity)
+                {
+                    throw new InvalidOperationException($"Only {book.Quantity - existingCartItem.Quantity} more unit(s) available in stock.");
+                }
+
+                // Update the quantity
+                existingCartItem.Quantity = totalRequestedQuantity;
             }
             else
             {
+                if (quantity > book.Quantity)
+                {
+                    throw new InvalidOperationException($"Only {book.Quantity} unit(s) available in stock.");
+                }
+
                 // Add the new book to the cart
                 var newCartItem = new CartEntity
                 {
@@ -72,7 +89,7 @@ namespace RepositoryLayer.Services
                 CartId = cartItem.CartId,
                 BookId = cartItem.BookId,
                 BookName = cartItem.Books?.BookName,
-                Author = cartItem.Books.Author,
+                Author = cartItem.Books?.Author,
                 Quantity = cartItem.Quantity,
                 UnitPrice = (int)cartItem.UnitPrice,
                 BookImage = cartItem.Books?.BookImage,
@@ -81,6 +98,7 @@ namespace RepositoryLayer.Services
 
             return responseModel;
         }
+
 
 
         //get all cart items
