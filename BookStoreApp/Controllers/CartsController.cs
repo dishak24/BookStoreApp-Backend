@@ -26,7 +26,7 @@ namespace BookStoreApp.Controllers
 
         // Add a book to the cart
         [Authorize(Roles = "User")]
-        [HttpPost]        
+        [HttpPost]
         public async Task<IActionResult> AddBookToCart(int bookId)
         {
             try
@@ -41,11 +41,10 @@ namespace BookStoreApp.Controllers
                     return NotFound(new ResponseModel<CartResponseModel>
                     {
                         Success = false,
-                        Message = "Book not found !!!",
+                        Message = "Book not found!",
                         Data = cart
                     });
                 }
-
 
                 return Ok(new ResponseModel<CartResponseModel>
                 {
@@ -54,18 +53,28 @@ namespace BookStoreApp.Controllers
                     Data = cart
                 });
             }
-            catch (Exception e)
+            catch (InvalidOperationException ex)
             {
+                // This handles insufficient stock, book already added, or other validation issues
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handles all other unexpected errors
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
                     Message = "An internal error occurred. Please try again later.",
-                    Data = e.Message
+                    Data = ex.Message
                 });
-
             }
-            
         }
+
 
         //get all cart items
         [Authorize(Roles = "User")]
