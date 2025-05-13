@@ -31,6 +31,9 @@ namespace RepositoryLayer.Context
         //For create Wishlists table
         public DbSet<OrderSummaryEntity> Orders { get; set; }
 
+        //For create CustomerDetails table
+        public DbSet<CustomerDetailsEntity> CustomerDetails { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -80,6 +83,13 @@ namespace RepositoryLayer.Context
                 .WithMany()
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Cascade delete when User is deleted---CustomerDetailsEntity
+            modelBuilder.Entity<CustomerDetailsEntity>()
+                .HasOne(c => c.Users)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Enable cascade delete
 
 
             base.OnModelCreating(modelBuilder);
