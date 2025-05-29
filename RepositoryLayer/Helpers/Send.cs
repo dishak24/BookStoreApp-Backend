@@ -22,7 +22,7 @@ namespace RepositoryLayer.Helpers
             //SMTP client - Built in Class
             //For interacting with only gmail account user
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);//587 - port number
-            NetworkCredential networkCredential = new NetworkCredential("dishakamble24@gmail.com", "fwuf eifp nciq qrps");//(email, app password)
+            NetworkCredential networkCredential = new NetworkCredential("dishakamble24@gmail.com", "uxds vzkq hkfk duob");//(email, app password)
 
 
             smtpClient.EnableSsl = true;
