@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using BookStoreApp.filters;
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -164,6 +165,9 @@ namespace BookStoreApp
                 };
 
 
+
+
+
             });
 
             //This tells ASP.NET Core to use Newtonsoft.Json
@@ -179,6 +183,30 @@ namespace BookStoreApp
             //used to access the current HTTP context (request info, headers, user claims, etc.) 
             services.AddHttpContextAccessor();
 
+            //CORS
+            // Named Policy
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "AllowOrigin",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                    });
+            });
+
+            //for handle DoS attack
+            //IMemoryCache
+            services.AddMemoryCache();
+
+            // global rate limit: 10 req/60 sec
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new RateLimitAttribute(10, 60)); 
+            });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -188,6 +216,9 @@ namespace BookStoreApp
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //On top -CORS
+            app.UseCors("AllowOrigin");
 
             //authentication must be on top
             app.UseAuthentication();
