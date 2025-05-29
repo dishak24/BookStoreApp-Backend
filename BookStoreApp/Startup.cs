@@ -128,6 +128,8 @@ namespace BookStoreApp
                 }));
             });
 
+            services.AddMassTransitHostedService();
+
             //for jwt token
             services.AddAuthentication(x =>
             {
