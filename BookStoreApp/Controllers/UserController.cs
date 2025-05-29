@@ -1,6 +1,7 @@
 ﻿
 using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,15 @@ namespace BookStoreApp.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserManager userManager;
-        
 
-        public UserController(IUserManager userManager)
+        //For Rabbit MQ
+        private readonly IBus bus;
+
+
+        public UserController(IUserManager userManager, IBus bus)
         {
             this.userManager = userManager;
+            this.bus = bus;
             
         }
 
@@ -136,6 +141,11 @@ namespace BookStoreApp.Controllers
                     Send send = new Send();
 
                     send.SendingMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
+
+                    Uri uri = new Uri("rabbitmq://localhost/BookStoreEmailQueue");
+                    var endPoint = await bus.GetSendEndpoint(uri);
+
+                    await endPoint.Send(forgotPasswordModel);
 
                     return Ok(new ResponseModel<string>
                     {
