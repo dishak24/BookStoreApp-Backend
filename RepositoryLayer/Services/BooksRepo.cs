@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interfaces;
@@ -19,13 +20,19 @@ namespace RepositoryLayer.Services
 
         //access the current HTTP context (request info, headers, user claims, etc.) 
         private readonly IHttpContextAccessor httpContextAccessor;
-        public BooksRepo(BookDBContext context, IHttpContextAccessor httpContextAccessor)
+
+        private readonly IDistributedCache distributedCache;
+
+        public BooksRepo(BookDBContext context, IHttpContextAccessor httpContextAccessor, IDistributedCache distributedCache)
         {
             this.context = context;
             this.httpContextAccessor = httpContextAccessor;
+            this.distributedCache = distributedCache;
         }
 
-        //to get all books
+
+        /*
+         //to get all books
         public async Task<IEnumerable<BookResponseModel>> GetAllBooksAsync()
         {
             return await context.Books
@@ -42,6 +49,50 @@ namespace RepositoryLayer.Services
                 })
                 .ToListAsync();
         }
+        */
+
+        //to get all books using cache
+        public async Task<IEnumerable<BookResponseModel>> GetAllBooksAsync()
+        {
+            string cacheKey = "all_books";
+            string serializedBooks;
+
+            //to get data from Redis
+            var cachedBooks = await distributedCache.GetStringAsync(cacheKey);
+
+            if (!string.IsNullOrEmpty(cachedBooks))
+            {
+                return System.Text.Json.JsonSerializer.Deserialize<IEnumerable<BookResponseModel>>(cachedBooks);
+            }
+
+            // Cache miss – fetch from DB
+            var books = await context.Books
+                .Select(b => new BookResponseModel
+                {
+                    BookId = b.BookId,
+                    BookName = b.BookName,
+                    Author = b.Author,
+                    Description = b.Description,
+                    Price = b.Price,
+                    DiscountPrice = b.DiscountPrice,
+                    Quantity = b.Quantity,
+                    BookImage = b.BookImage
+                })
+                .ToListAsync();
+
+            // Store in Redis
+            serializedBooks = System.Text.Json.JsonSerializer.Serialize(books);
+
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) // Cache timeout
+            };
+
+            await distributedCache.SetStringAsync(cacheKey, serializedBooks, options);
+
+            return books;
+        }
+
 
 
         //to get book by id
@@ -91,6 +142,10 @@ namespace RepositoryLayer.Services
 
 
             await context.SaveChangesAsync();
+
+            // Invalidate Redis cache
+            await distributedCache.RemoveAsync("all_books");
+
             return true;
         }
 
@@ -107,6 +162,9 @@ namespace RepositoryLayer.Services
 
             context.Books.Remove(book);
             await context.SaveChangesAsync();
+
+            // Invalidate Redis cache
+            await distributedCache.RemoveAsync("all_books");
             return true;
         }
 
