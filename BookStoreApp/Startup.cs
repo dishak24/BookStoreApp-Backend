@@ -47,6 +47,11 @@ namespace BookStoreApp
             services.AddDbContext<BookDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
             //services.AddDbContext<BooksContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DbConnection"]));
 
+            // For Redis Cache
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("RedisConnection");
+            });
 
             //for user
             services.AddTransient<IUserRepo, UserRepo>();
