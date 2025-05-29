@@ -78,6 +78,7 @@ namespace RepositoryLayer.Services
             return await context.Orders
                 .Include(o => o.Books)
                 .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderedAt) // Sort by date DESCENDING
                 .Select(o => new OrderResponseModel
                 {
                     OrderId = o.OrderId,
@@ -91,6 +92,7 @@ namespace RepositoryLayer.Services
                 })
                 .ToListAsync();
         }
+
 
 
     }
