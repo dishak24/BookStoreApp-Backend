@@ -54,7 +54,8 @@ namespace RepositoryLayer.Services
                 }
 
                 // Update the quantity
-                existingCartItem.Quantity = totalRequestedQuantity;
+                // Force reset to desired quantity
+                existingCartItem.Quantity = quantity;
             }
             else
             {
@@ -63,6 +64,7 @@ namespace RepositoryLayer.Services
                     throw new InvalidOperationException($"Only {book.Quantity} unit(s) available in stock.");
                 }
 
+                /*
                 // Add the new book to the cart
                 var newCartItem = new CartEntity
                 {
@@ -77,6 +79,14 @@ namespace RepositoryLayer.Services
 
             // Save changes
             await context.SaveChangesAsync();
+                */
+
+                // 3. Call the stored procedure to insert/update the cart
+                await context.Database.ExecuteSqlRawAsync(
+                    "EXEC SP_AddBookToCart @userId = {0}, @bookId = {1}, @quantity = {2}",
+                    userId, bookId, quantity);
+
+            }//else close
 
             // Fetch the updated cart item with book details
             var cartItem = await context.Carts
@@ -104,7 +114,7 @@ namespace RepositoryLayer.Services
         //get all cart items
         public async Task<CartListResponseModel> GetCartAsync(int userId)
         {
-            var items = await context.Carts
+            /*var items = await context.Carts
                 .Where(c => c.UserId == userId && !c.IsPurchased)
                 .Include(c => c.Books)
                 .Select(c => new CartResponseModel
@@ -118,11 +128,29 @@ namespace RepositoryLayer.Services
                     BookImage = c.Books.BookImage,
                     IsPurchased = c.IsPurchased
                 })
-                .ToListAsync();
+                .ToListAsync();*/
+
+            // call SP -> map to CartResponseModel
+            var items = await context.CartView
+                        .FromSqlRaw("EXEC SP_GetAllCarts @UserId = {0}", userId)
+                        .ToListAsync();
+
+            var result = items.Select(c => new CartResponseModel
+            {
+                CartId = c.CartId,
+                BookId = c.BookId,
+                BookName = c.BookName,
+                Author = c.Author,
+                Quantity = c.Quantity,
+                UnitPrice = c.UnitPrice,
+                BookImage = c.BookImage,
+                IsPurchased = c.IsPurchased
+            }).ToList();
 
             return new CartListResponseModel
             {
-                Items = items,
+                //Items = items,
+                Items = result,
                 TotalAmount = items.Sum(x => x.UnitPrice * x.Quantity)
             };
         }
@@ -131,7 +159,7 @@ namespace RepositoryLayer.Services
         //remove item from cart
         public async Task<bool> RemoveCartItemAsync(int bookId, int userId)
         {
-            var cartItem = await context.Carts
+            /*var cartItem = await context.Carts
                 .Include(c => c.Books)
                 .FirstOrDefaultAsync(c => c.BookId == bookId && c.UserId == userId);
 
@@ -142,12 +170,29 @@ namespace RepositoryLayer.Services
 
             context.Carts.Remove(cartItem);
             await context.SaveChangesAsync();
-            return true;
+            return true;*/
+
+            //updated via SP 
+            var result = await context.Database.ExecuteSqlRawAsync
+                (
+                "EXEC SP_RemoveCartItem @userId = {0}, @bookId = {1}", userId, bookId
+                );
+
+            // result will be the number of affected rows (ideally 1 if deleted)
+            return result > 0;
         }
 
         //update quantity of item from cart
         public async Task<CartResponseModel> UpdateCartQuantityAsync(int userId, int bookId, int quantity)
         {
+            // Update via stored procedure
+            await context.Database.ExecuteSqlRawAsync(
+                "EXEC SP_UpdateCartQuantity @userId = {0}, @bookId = {1}, @quantity = {2}",
+                userId, bookId, quantity
+);
+
+
+            // Fetch updated item to return
             var cartItem = await context.Carts
                 .Include(c => c.Books)
                 .FirstOrDefaultAsync(c => c.BookId == bookId && c.UserId == userId); 
@@ -155,10 +200,12 @@ namespace RepositoryLayer.Services
             if (cartItem == null)
                 return null;
 
+            /*
             cartItem.Quantity = quantity;
 
             // Save the changes
             await context.SaveChangesAsync();
+            */
 
             return new CartResponseModel
             {
