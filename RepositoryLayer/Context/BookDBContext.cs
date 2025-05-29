@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Migrations;
+using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -34,10 +35,15 @@ namespace RepositoryLayer.Context
         //For create CustomerDetails table
         public DbSet<CustomerDetailsEntity> CustomerDetails { get; set; }
 
+        public DbSet<CartViewModel> CartView { get; set; }
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CartViewModel>().HasNoKey(); // Mark it keyless
+
             modelBuilder.Entity<Books>(entity =>
             {
                 entity.HasKey(e => e.BookId);
