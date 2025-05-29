@@ -41,7 +41,7 @@ namespace RepositoryLayer.Helpers
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(3),
+                expires: DateTime.Now.AddMinutes(15),
                 signingCredentials: credentials
             );
 
