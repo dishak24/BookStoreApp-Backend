@@ -1,4 +1,5 @@
-﻿using ManagerLayer.Interfaces;
+﻿using BookStoreApp.filters;
+using ManagerLayer.Interfaces;
 using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +15,7 @@ namespace BookStoreApp.Controllers
 {
     [Route("api/carts")]
     [ApiController]
+    //[RateLimit(10, 60)] // applies to all actions in this controller
     public class CartsController : ControllerBase
     {
         //dependency
