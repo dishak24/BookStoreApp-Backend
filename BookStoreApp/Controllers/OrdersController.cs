@@ -6,6 +6,7 @@ using System;
 using ManagerLayer.Interfaces;
 using RepositoryLayer.Models;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace BookStoreApp.Controllers
 {
@@ -16,9 +17,13 @@ namespace BookStoreApp.Controllers
         //dependency
         private readonly IOrdersManager manager;
 
-        public OrdersController(IOrdersManager manager)
+        //For Logger
+        private readonly ILogger<OrdersController> logger;
+
+        public OrdersController(IOrdersManager manager, ILogger<OrdersController> logger)
         {
             this.manager = manager;
+            this.logger = logger;
         }
 
         //to place order
@@ -59,6 +64,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception ex)
             {
+                //logger
+                logger.LogError(ex.ToString());
+
                 return StatusCode(500, new
                 {
                     Success = false,
@@ -100,6 +108,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,

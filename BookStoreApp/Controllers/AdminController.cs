@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helpers;
 using RepositoryLayer.Models;
@@ -18,9 +19,13 @@ namespace BookStoreApp.Controllers
     {
         private readonly IAdminManager manager;
 
-        public AdminController(IAdminManager manager)
+        //For Logger
+        private readonly ILogger<AdminController> logger;
+
+        public AdminController(IAdminManager manager, ILogger<AdminController> logger)
         {
             this.manager = manager;
+            this.logger = logger;
         }
 
         //admin registration
@@ -67,6 +72,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -104,6 +112,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -147,6 +158,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -186,6 +200,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,

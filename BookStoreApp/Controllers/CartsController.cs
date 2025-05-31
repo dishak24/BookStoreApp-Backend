@@ -4,6 +4,7 @@ using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Migrations;
 using RepositoryLayer.Models;
@@ -21,9 +22,13 @@ namespace BookStoreApp.Controllers
         //dependency
         private readonly ICartManager manager;
 
-        public CartsController(ICartManager manager)
+        //For Logger
+        private readonly ILogger<CartsController> logger;
+
+        public CartsController(ICartManager manager, ILogger<CartsController> logger)
         {
             this.manager = manager;
+            this.logger = logger;
         }
 
         // Add a book to the cart
@@ -67,6 +72,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception ex)
             {
+                //logger
+                logger.LogError(ex.ToString());
+
                 // Handles all other unexpected errors
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
@@ -126,6 +134,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(ex.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -167,6 +178,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -231,6 +245,8 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,

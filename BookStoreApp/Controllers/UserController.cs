@@ -5,11 +5,16 @@ using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helpers;
 using RepositoryLayer.Models;
 using RepositoryLayer.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookStoreApp.Controllers
@@ -19,15 +24,20 @@ namespace BookStoreApp.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserManager userManager;
+        private readonly BookDBContext context;
 
         //For Rabbit MQ
         private readonly IBus bus;
 
+        //For Logger
+        private readonly ILogger<UserController> logger;
 
-        public UserController(IUserManager userManager, IBus bus)
+        public UserController(IUserManager userManager, IBus bus, BookDBContext context, ILogger<UserController> logger)
         {
             this.userManager = userManager;
             this.bus = bus;
+            this.context = context;
+            this.logger = logger;
             
         }
 
@@ -75,6 +85,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -116,6 +129,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString()); 
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -166,6 +182,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -206,6 +225,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -216,5 +238,15 @@ namespace BookStoreApp.Controllers
             }
         }
 
+
+        //get names starts with s
+
+        [HttpGet("names-starts-with-s")]
+
+        public async Task<ActionResult<List<UserEntity>>> NamesStartWithSAsync()
+        {
+            var userName = await context.Users.Where(u => u.FullName.StartsWith("s")).ToListAsync();
+            return Ok(userName);
+        } 
     }
 }

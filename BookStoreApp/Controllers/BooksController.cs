@@ -3,6 +3,7 @@ using ManagerLayer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Models;
 using System;
@@ -19,9 +20,13 @@ namespace BookStoreApp.Controllers
         //Dependency
         private readonly IBooksManager booksManager;
 
-        public BooksController(IBooksManager booksManager)
+        //For Logger
+        private readonly ILogger<BooksController> logger;
+
+        public BooksController(IBooksManager booksManager, ILogger<BooksController> logger)
         {
             this.booksManager = booksManager;
+            this.logger = logger;
         }
 
         // Accessible by Admin and user
@@ -55,6 +60,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -85,6 +93,7 @@ namespace BookStoreApp.Controllers
                 }
                 else
                 {
+
                     return Ok(new ResponseModel<BookResponseModel>
                     {
                         Success = true,
@@ -95,6 +104,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -135,6 +147,10 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -177,6 +193,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -218,6 +237,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -259,6 +281,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -305,6 +330,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,

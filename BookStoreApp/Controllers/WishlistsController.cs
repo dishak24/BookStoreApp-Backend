@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RepositoryLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,13 @@ namespace BookStoreApp.Controllers
         //dependency
         private readonly IWishlistsManager manager;
 
-        public WishlistsController(IWishlistsManager manager)
+        //For Logger
+        private readonly ILogger<WishlistsController> logger;
+
+        public WishlistsController(IWishlistsManager manager, ILogger<WishlistsController> logger)
         {
             this.manager = manager;
+            this.logger = logger;
         }
 
         //add book to wishlist
@@ -57,6 +62,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -97,6 +105,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
@@ -139,6 +150,9 @@ namespace BookStoreApp.Controllers
             }
             catch (Exception e)
             {
+                //logger
+                logger.LogError(e.ToString());
+
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseModel<string>
                 {
                     Success = false,
